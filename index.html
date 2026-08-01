@@ -1,13 +1,79 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>GitPages</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vikas Raut</title>
+<style>
+:root{--paper:#f6f3ec;--ink:#17150f;--dim:#5d584a;--line:#d9d2c0;--red:#b0341b;
+--mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'Archivo','Inter',"Helvetica Neue",Arial,sans-serif;
+min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8vw}
+.tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:2rem}
+h1{font-weight:800;font-size:clamp(2.4rem,7vw,5rem);letter-spacing:-.02em;line-height:1.05}
+p.line{font-size:clamp(1.1rem,2vw,1.45rem);color:var(--ink);max-width:44ch;margin-top:1.2rem;font-weight:600}
+p.line small{display:block;font-weight:400;color:var(--dim);font-size:.8em;margin-top:.3rem}
+.doodle{margin:2rem 0 0;max-width:460px;width:80%}
+.doodle text{font-family:var(--mono)}
+.links{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.2rem}
+.links a{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+text-decoration:none;border:1.5px solid var(--ink);border-radius:5px;padding:.5em .9em}
+.links a:hover{border-color:var(--red);color:var(--red)}
+footer{position:fixed;bottom:1.2rem;left:8vw;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;color:var(--dim)}
+.cursor{display:inline-block;width:.18em;height:.85em;background:var(--red);margin-left:.1em;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.clack{animation:clack .5s steps(2) infinite}
+@keyframes clack{50%{opacity:.25}}
+.zz{animation:zz 2.6s ease-in-out infinite}
+@keyframes zz{0%,100%{opacity:.25}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.cursor,.clack,.zz{animation:none}}
+</style>
 </head>
 <body>
-    Yoo
+  <div class="tag">VIKASLRAUT.GITHUB.IO</div>
+  <h1>Vikas Raut<span class="cursor"></span></h1>
+  <p class="line">Used to build real systems.<br>Lately — mostly just the typing.</p>
+  <svg class="doodle" viewBox="0 0 460 180" role="img" aria-label="A stick figure reclines with feet on the desk while a small robot types furiously. The figure says: you're doing great.">
+    <!-- desk -->
+    <line x1="215" y1="128" x2="440" y2="128" stroke="var(--ink)" stroke-width="3"/>
+    <line x1="235" y1="128" x2="235" y2="168" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="420" y1="128" x2="420" y2="168" stroke="var(--ink)" stroke-width="2.5"/>
+    <!-- robot -->
+    <rect x="330" y="70" width="52" height="42" rx="8" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="342" cy="86" r="4" fill="var(--ink)"/>
+    <circle cx="362" cy="86" r="4" fill="var(--ink)"/>
+    <line x1="356" y1="70" x2="356" y2="58" stroke="var(--ink)" stroke-width="2"/>
+    <circle cx="356" cy="55" r="3.5" fill="var(--red)"/>
+    <line x1="336" y1="112" x2="316" y2="124" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="376" y1="112" x2="392" y2="124" stroke="var(--ink)" stroke-width="2.5"/>
+    <rect x="300" y="122" width="104" height="7" rx="3" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <text class="clack" x="352" y="46" text-anchor="middle" font-size="10" fill="var(--dim)" letter-spacing="1">clack clack clack</text>
+    <!-- reclining figure -->
+    <circle cx="60" cy="78" r="13" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="68" y1="88" x2="105" y2="112" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="105" y1="112" x2="218" y2="120" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="218" y1="120" x2="222" y2="128" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M52,90 Q38,96 44,106" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M66,92 Q56,102 64,110" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <!-- chair -->
+    <line x1="46" y1="92" x2="40" y2="130" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="40" y1="130" x2="110" y2="130" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="75" y1="130" x2="75" y2="152" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="60" cy="158" r="6" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <circle cx="90" cy="158" r="6" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <!-- speech -->
+    <rect x="88" y="34" width="150" height="28" rx="14" fill="none" stroke="var(--red)" stroke-width="2"/>
+    <line x1="100" y1="62" x2="78" y2="74" stroke="var(--red)" stroke-width="2"/>
+    <text x="163" y="52" text-anchor="middle" font-size="12" fill="var(--red)">you're doing great.</text>
+    <text class="zz" x="34" y="52" font-size="13" fill="var(--dim)">z</text>
+    <text class="zz" x="42" y="42" font-size="16" fill="var(--dim)" style="animation-delay:.6s">z</text>
+    <text class="zz" x="52" y="31" font-size="19" fill="var(--dim)" style="animation-delay:1.2s">Z</text>
+  </svg>
+  <div class="links">
+    <a href="https://github.com/vikaslraut">GitHub</a>
+    <a href="mailto:vikaslraut@gmail.com">Email</a>
+  </div>
+  <footer>portfolio under construction — receipts coming soon.</footer>
 </body>
 </html>
