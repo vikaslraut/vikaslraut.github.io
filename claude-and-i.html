@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code, Spec-Driven Development, and SocDocLoc</title>
+  <style>
+    :root {
+      --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+      --bg: #F5F2EA;
+      --bg-soft: #ECE6D8;
+      --surface: #FFFFFF;
+      --surface-2: #F0EAE0;
+      --text: #3D3929;
+      --muted: #78715F;
+      --accent: #D97757;
+      --accent-2: #B5562F;
+      --accent-3: #A8442F;
+      --line: #E4DDCC;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at top left, #FBF9F3 0%, var(--bg) 62%);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 5.2rem 5.2rem 6.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: safe center;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.76rem;
+      color: var(--accent-2);
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    h1, h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 1.12;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    h3 { font-family: var(--font-sans); font-size: 1.3rem; margin-bottom: 0.75rem; color: var(--accent-2); font-weight: 700; }
+
+    p, li {
+      font-family: var(--font-sans);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .lead { font-size: 1.2rem; color: var(--text); }
+
+    ul { margin-left: 1.2rem; display: grid; gap: 0.6rem; }
+    li { margin-left: 0.4rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 1rem 1.1rem;
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(61, 57, 41, 0.05);
+    }
+
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.36rem 0.7rem;
+      font-size: 0.8rem;
+      color: var(--accent-2);
+      background: var(--surface);
+      margin-right: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .accent { color: var(--accent-2); }
+    .accent-3 { color: var(--accent-3); }
+
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 1rem 1.3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      background: rgba(245, 242, 234, 0.88);
+      backdrop-filter: blur(8px);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(61, 57, 41, 0.08);
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.25s ease;
+    }
+
+    .nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    button {
+      font-family: var(--font-sans);
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    button:hover { border-color: var(--accent); color: var(--accent-2); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+
+    .quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.25rem;
+      line-height: 1.55;
+      color: var(--text);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1rem 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      margin-top: 0.4rem;
+    }
+
+    .stat .num {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent-2);
+    }
+
+    .stat .label {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .chapter-break {
+      align-items: center;
+      text-align: center;
+    }
+
+    .chapter-break .eyebrow { text-align: center; }
+
+    .chapter-break h2 {
+      max-width: 22ch;
+      margin: 0 auto 1rem;
+      background: linear-gradient(90deg, var(--text), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .chapter-break .lead {
+      max-width: 56ch;
+      margin: 0 auto 1.6rem;
+    }
+
+    .reveal-list {
+      display: grid;
+      gap: 0.8rem;
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .reveal-list .card {
+      display: flex;
+      align-items: baseline;
+      gap: 0.8rem;
+    }
+
+    .reveal-list .card .n {
+      flex: none;
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-2);
+    }
+
+    .big-num {
+      position: absolute;
+      top: 0.5rem;
+      right: 1.5rem;
+      font-family: var(--font-serif);
+      font-size: 11rem;
+      font-weight: 700;
+      color: rgba(61, 57, 41, 0.05);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .card.evidence .src {
+      display: block;
+      font-family: var(--font-sans);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .card.evidence p { font-size: 0.92rem; }
+
+    .flyer-btn {
+      margin-top: 1.1rem;
+      font-family: var(--font-sans);
+      background: rgba(217, 119, 87, 0.08);
+      border: 1px solid var(--accent);
+      color: var(--accent-2);
+      border-radius: 999px;
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .flyer-btn:hover { background: rgba(217, 119, 87, 0.16); }
+
+    .flyer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(61, 57, 41, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 40;
+    }
+
+    .flyer-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .flyer-panel {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      bottom: 0;
+      width: min(480px, 92vw);
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent);
+      box-shadow: -16px 0 48px rgba(61, 57, 41, 0.18);
+      padding: 3rem 2rem 2rem;
+      overflow-y: auto;
+      z-index: 41;
+      transition: right 0.4s cubic-bezier(.6,.02,.1,1);
+    }
+
+    .flyer-panel.open { right: 0; }
+    .flyer-panel h3 { font-family: var(--font-serif); color: var(--text); margin-bottom: 1rem; }
+    .flyer-panel p { font-family: var(--font-sans); font-size: 0.88rem; margin-bottom: 0.9rem; max-width: none; color: var(--muted); }
+
+    .flyer-close {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent-2);
+      margin-bottom: 1rem;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .flyer-hint {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .shelf {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: var(--muted);
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      margin-top: 0.8rem;
+    }
+
+    .shelf b { color: var(--text); }
+
+    .level-tag {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .pipeline-steps-list { display: grid; gap: 0.5rem; }
+
+    .pipeline-step {
+      display: flex;
+      gap: 0.6rem;
+      align-items: baseline;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .pipeline-step .num {
+      color: var(--accent-2);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      flex: none;
+    }
+
+    .pipeline-step.gate { color: #8A3B2A; }
+    .pipeline-step.gate .num { color: var(--accent-3); }
+
+    .kv-list { display: grid; gap: 0.55rem; margin-top: 0.9rem; }
+
+    .kv-row {
+      display: grid;
+      grid-template-columns: 9rem 1fr;
+      gap: 0.8rem;
+      align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.5rem;
+    }
+
+    .kv-row .k {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+
+    .kv-row .v { font-size: 0.88rem; color: var(--muted); }
+
+    .catch-chart {
+      display: grid;
+      gap: 0.7rem;
+      margin-top: 1.1rem;
+      max-width: 640px;
+    }
+
+    .catch-row {
+      display: grid;
+      grid-template-columns: 12rem 1fr 2.5rem;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .catch-row .label { font-size: 0.85rem; color: var(--text); font-weight: 600; }
+
+    .bar-track {
+      height: 0.9rem;
+      background: rgba(61, 57, 41, 0.07);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-track .bar { height: 100%; border-radius: 999px; }
+
+    .catch-row .num {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-align: right;
+      color: var(--text);
+    }
+
+    .cap {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-style: italic;
+    }
+
+    .formula {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 600;
+      text-align: center;
+      margin: 1.4rem auto;
+      color: var(--text);
+      max-width: 26ch;
+    }
+
+    .formula em { color: var(--accent-2); font-style: normal; }
+
+    .named-note {
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 0.9rem 1.1rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 60ch;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--surface);
+    }
+
+    .named-note .lbl {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .plain-list { display: grid; gap: 0.6rem; margin-top: 0.9rem; }
+
+    .plain-list li {
+      list-style: none;
+      padding-left: 1.4rem;
+      position: relative;
+      color: var(--text);
+    }
+
+    .plain-list li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--accent-2);
+    }
+
+    .prior-art-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 0.9rem;
+    }
+
+    .prior-art-table th,
+    .prior-art-table td {
+      text-align: left;
+      padding: 0.5rem 0.7rem;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .prior-art-table th {
+      color: var(--accent-2);
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .prior-art-table td:first-child { color: var(--text); }
+
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-top: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .review-scale { display: grid; gap: 0.6rem; margin-top: 0.5rem; }
+
+    .review-axis {
+      display: grid;
+      grid-template-columns: 6.8rem 1fr;
+      gap: 0.7rem;
+      font-family: var(--font-sans);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .review-axis .labels { display: flex; justify-content: space-between; }
+
+    .review-row-top {
+      display: grid;
+      grid-template-columns: 6.8rem 1fr;
+      gap: 0.7rem;
+      align-items: center;
+    }
+
+    .review-label { font-size: 0.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+    .review-track {
+      position: relative;
+      height: 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #8FAF87, #D9A657 55%, #C1503F);
+    }
+
+    .review-dot {
+      position: absolute;
+      top: 50%;
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--text);
+      transform: translate(-50%, -50%);
+    }
+
+    .review-caption {
+      margin-left: calc(6.8rem + 0.7rem);
+      font-size: 0.74rem;
+      line-height: 1.4;
+      color: var(--muted);
+      margin-top: 0.15rem;
+      max-width: none;
+    }
+
+    .meeting-scene {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .meeting-room {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 1.6rem 2rem 0;
+      overflow: hidden;
+    }
+
+    .meeting-table {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 62%;
+      height: 22px;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-bottom: none;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+
+    .figure {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 84px;
+      z-index: 1;
+    }
+
+    .figure-svg { width: 58px; height: 82px; transition: transform 0.3s ease; }
+    .figure.talking .figure-svg { animation: figureBounce 0.6s ease-in-out infinite alternate; }
+
+    .figure-svg .head { fill: var(--text); }
+    .figure-svg .body { fill: var(--accent); }
+    .figure-bot .figure-svg .head { fill: var(--muted); }
+    .figure-bot .figure-svg .body { fill: var(--accent-2); }
+    .figure-bot .figure-svg .eye { fill: var(--surface); }
+    .figure-bot .figure-svg .antenna { stroke: var(--muted); stroke-width: 2; }
+    .figure-bot .figure-svg .antenna-tip { fill: var(--accent-2); }
+    .figure-bot.talking .figure-svg .eye { fill: var(--accent); }
+
+    .figure-label {
+      margin-top: 0.4rem;
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .speech-bubble {
+      position: absolute;
+      top: -2.5rem;
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.4rem 0.6rem;
+      opacity: 0;
+      transform: translateY(6px) scale(0.9);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 2px 6px rgba(61, 57, 41, 0.08);
+    }
+
+    .figure.talking .speech-bubble { opacity: 1; transform: translateY(0) scale(1); }
+
+    .speech-bubble span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: block;
+      animation: dotPulse 1s infinite ease-in-out;
+    }
+
+    .speech-bubble span:nth-child(2) { animation-delay: 0.15s; }
+    .speech-bubble span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes dotPulse {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    @keyframes figureBounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-3px); }
+    }
+
+    .cartoon-wrap { display: flex; justify-content: center; margin: 1rem 0; }
+    .cartoon { max-width: 860px; width: 100%; }
+    .cartoon text { font-family: var(--font-mono); }
+
+    .cartoon .c-machine { animation: chug 0.6s ease-in-out infinite alternate; }
+    @keyframes chug { from { transform: translateY(0); } to { transform: translateY(2.5px); } }
+
+    .cartoon .c-light { animation: blinklight 1s steps(1) infinite; }
+    @keyframes blinklight { 50% { opacity: 0.2; } }
+
+    .cartoon .c-fly { transform-box: fill-box; transform-origin: center; animation: fly 2.4s linear infinite; }
+    @keyframes fly {
+      0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      50% { transform: translate(120px,6px) rotate(45deg); opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translate(238px,62px) rotate(88deg); opacity: 0; }
+    }
+
+    .cartoon .c-belt { animation: beltmove 2.4s linear infinite; }
+    @keyframes beltmove { from { transform: translateX(0); } to { transform: translateX(80px); } }
+
+    .cartoon .c-fadein { animation: fin 2.4s linear infinite; }
+    @keyframes fin { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 1; } }
+
+    .cartoon .c-fadeout { animation: fout 2.4s linear infinite; }
+    @keyframes fout { 0% { opacity: 1; } 65% { opacity: 1; } 100% { opacity: 0; } }
+
+    .cartoon .c-roller { transform-box: fill-box; transform-origin: center; animation: roll 1.7s linear infinite; }
+    @keyframes roll { to { transform: rotate(360deg); } }
+
+    .cartoon .c-pile { transform-box: fill-box; transform-origin: 80% 100%; animation: teeter 3.4s ease-in-out infinite; }
+    @keyframes teeter { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(2deg); } }
+
+    .cartoon .c-b1 { animation: sp1 7s linear infinite; }
+    @keyframes sp1 { 0%, 10% { opacity: 0; } 18%, 88% { opacity: 1; } 96%, 100% { opacity: 0; } }
+
+    .cartoon .c-b2 { transform-box: fill-box; transform-origin: center; animation: sp2 7s linear infinite; }
+    @keyframes sp2 {
+      0%, 48% { opacity: 0; transform: scale(0.6); }
+      55% { opacity: 1; transform: scale(1.15); }
+      62%, 88% { opacity: 1; transform: scale(1); }
+      96%, 100% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cartoon .c-machine, .cartoon .c-light, .cartoon .c-fly, .cartoon .c-belt,
+      .cartoon .c-fadein, .cartoon .c-fadeout, .cartoon .c-roller, .cartoon .c-pile,
+      .cartoon .c-b1, .cartoon .c-b2 { animation: none; }
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 3rem 1.2rem 5rem; }
+      .grid, .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="progress"><span id="progressBar"></span></div>
+
+    <section class="slide active">
+      <div class="eyebrow">Caizin · Engineering Share-out</div>
+      <h1>Claude Code, Spec-Driven Development, and the SocDocLoc Story</h1>
+      <p class="lead">A practical view of how an AI coding agent changed the pace of delivery, the role of the spec, and the discipline required to ship real software.</p>
+      <div style="margin-top: 1.2rem;">
+        <span class="pill">Vikas Raut</span>
+        <span class="pill">SocDocLoc</span>
+        <span class="pill">Claude Code</span>
+      </div>
+      <div class="quote" style="margin-top: 1.4rem;">The code became smaller than the system around it: spec, review, context, and judgment.</div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">01 · Why now</div>
+      <h2>The one FOMO-led decision I feel good about</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>The grind</h3>
+          <p>Smarsh/Cyber has been exhausting for months — 60-hour work weeks were the norm. The way of working there was its own controversy, not the scope of this deck, but every one of my earlier attempts at AI-assisted development failed. I know why now. If I could time-travel six months back with the lessons I hold today, I'd do it differently.</p>
+        </div>
+        <div class="card">
+          <h3>The spark</h3>
+          <p>Claude Sonnet 4.6's training cutoff was August 2025. After that, the dev forums exploded over how far it had pulled ahead in AI-assisted coding. All reading and no hands-on was making Vikas a dull boy. The FOMO made me restless — so in March 2026, much later than I'd like to admit, I picked this project as my first independent experiment to truly live like a vibe-coder.</p>
+        </div>
+      </div>
+      <div class="quote" style="margin-top: 1rem;">Most of my FOMO-led decisions are over-estimated. This one felt personally rewarding, and I feel obligated to share it — with the caveat that I've only scratched the surface. There's a lot more here to try and achieve.</div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">02 · The context</div>
+      <h2>SocDocLoc — a brief to set the context of this conversation</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>What it is</h3>
+          <p>A simple document locker for housing societies, built on statutory mandates in the Model Bye-laws 2014 and the MCS Act 1960 — an act amended repeatedly across 66 years. Societies are required to audit themselves; the DDR is the authority meant to supervise, review, and control.</p>
+        </div>
+        <div class="card">
+          <h3>The pain</h3>
+          <p>Most societies don't clear the audit; very few earn a Class A certificate. The scramble starts when matters turn legal, or when a society considers redevelopment — the cost of not maintaining statutory documents surfaces exactly when management committees expect it least. At the root of it: plain unawareness.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 0.9rem;">
+        <h3>What it does</h3>
+        <p>SocDocLoc digitizes every document a housing society is expected to maintain, leaving only 3 that still need to exist as physical copies. The property card initiative — a digital certificate of ownership — could eliminate the need for those 3 as well. We'll see how that pans out.</p>
+      </div>
+      <div class="card" style="margin-top: 0.9rem; border-color: var(--accent);">
+        <h3>The win</h3>
+        <div class="stats">
+          <div class="stat"><span class="num">8 wks</span><span class="label">spec to production</span></div>
+          <div class="stat"><span class="num">~100 hrs</span><span class="label">total person-hours</span></div>
+          <div class="stat"><span class="num">2 societies</span><span class="label">120 flats onboarded</span></div>
+          <div class="stat"><span class="num">99K</span><span class="label">lines of code</span></div>
+        </div>
+        <p style="margin-top: 0.7rem;">Cleared our internal SOC2 Type II audit and DPDP Act compliance. Both onboarded societies cleared their audit with a DDR-attested Class A certificate. We now have the proof — it's up to the sales team to take it ahead from here. My job (sort of) ends here.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">03 · The thesis</div>
+      <h2>My thesis — I will not write a single line of code, but will review all of it</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>The thesis</h3>
+          <p>Picking up signals from the dev forums, I formed my own thesis on how a greenfield app could take birth — from idea, to definition, to execution, to deployment, to onboarding real customers. Not a single line of code written by hand, but every line of AI-generated code reviewed.</p>
+          <p style="margin-top: 0.6rem;">Easy enough for a greenfield app. Probably not so easy on a 5+ year legacy codebase with nothing documented. The thesis had to be tested before I started coding.</p>
+        </div>
+        <div class="card">
+          <h3>Where it came from</h3>
+          <p>It stemmed from the "good" projects I'd worked on at Caizin and in my past life — the 4E rehaul above all, 14 months with 4–5 engineers. Specs lived in Jira and Confluence, mostly written by MJ, then synthesized into developer-focused epics and stories, each linked back to the original definition.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 0.9rem;">
+        <h3>Getting started</h3>
+        <p>That experience of what a "good" SDLC looks like added real value to the thesis. I started small — just a password-less login screen. Frontend on React/shadcn, backend on C# services, Postgres for the database, AWS SES for emails. The project folder structure took shape from there.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">04 · Getting real</div>
+      <h2>How do I "really" start? — the part no one warns you about with spec-driven, AI-assisted build-out</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Where I got stuck</h3>
+          <p>I acted like a typical engineer — got my tiers and layers ready in VS Code. But starting an actual feature build-out is where I first felt lost.</p>
+          <p style="margin-top: 0.6rem;">If this was spec-driven + AI, it became clear the spec had to live closer to the code. This time, in the GitHub repo — not Jira. Not yet.</p>
+        </div>
+        <div class="card">
+          <h3>The key was to start with definition</h3>
+          <ul>
+            <li>What is the product expected to do?</li>
+            <li>What business model does it serve?</li>
+            <li>How do we expect users to interact with it?</li>
+            <li>Why would users follow a certain workflow?</li>
+            <li>What are my domain entities, and how crisply can I define their relationships?</li>
+            <li>How are features laid out — who (role) does what, where, and how?</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote" style="margin-top: 1rem;">A high-level definition was hand-written. Tell the AI everything it needs to know — serve the context it needs on a platter. <span class="accent">The WHY comes in the slides that follow.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">05 · The writing</div>
+      <h2>3 weeks of just "writing"</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>How I wrote</h3>
+          <ul>
+            <li>Not Shashi Tharoor style — plain, basic English.</li>
+            <li>Highly accurate, complete sentences.</li>
+            <li>Instruction-style, without unnecessarily personifying Claude.</li>
+          </ul>
+          <p class="quote" style="margin-top: 0.7rem;">PS: Claude never takes offense, is never rude, is never sad — but it also never pushes back, it keeps obeying... until it doesn't. So don't abuse it when it fails; reinforce it when it does well. That's how output quality compounds.</p>
+        </div>
+        <div class="card">
+          <h3>What I wrote</h3>
+          <ul>
+            <li>Defined the problem — sometimes over and over again.</li>
+            <li>Defined every word in the domain nomenclature, and let the model trace it back to the Model Bye-laws and MCS Act (both public PDFs).</li>
+            <li>Collected all artifacts and supported them with evidence.</li>
+            <li>Described the app's behavior, literally.</li>
+            <li>Described every detail of user interaction.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">06 · The WHY</div>
+      <h2>Describing the solution architecture — like a "good" (engineer) boy</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>Beyond WHAT and HOW</h3>
+          <p>I don't recall the last time I wrote this much about my engineering decisions. This time it went beyond the WHAT and the HOW, into the WHY — in plain terms, ADRs: a decision, its reasoning, and what I didn't choose. The payoff wasn't just for me: the same WHY documentation became context Claude drew on across later sessions, keeping decisions consistent long after the reasoning had left short-term memory.</p>
+        </div>
+        <div class="card">
+          <h3>Decision → rationale</h3>
+          <div class="kv-list" style="margin-top: 0;">
+            <div class="kv-row"><span class="k">Encryption at rest</span><span class="v">Not a default habit — required for PII, not optional.</span></div>
+            <div class="kv-row"><span class="k">Secure transfer, always</span><span class="v">No exceptions carved out for "internal network."</span></div>
+            <div class="kv-row"><span class="k">PII always masked</span><span class="v">Same obligation, enforced at the query layer.</span></div>
+            <div class="kv-row"><span class="k">Secrets: where + rotation</span><span class="v">Written down so rotation is a schedule, not a memory.</span></div>
+            <div class="kv-row"><span class="k">Automated vs. backend job</span><span class="v">Invisible-to-the-user work still needs a named owner.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 0.9rem;">
+        <h3>What we ruled out</h3>
+        <p>Not every decision stuck. One call — argued from preference rather than evidence — got revisited and flipped, twice, after implementation exposed what the reasoning had missed. Writing the WHY down is what made the reversal cheap: the record showed exactly what to undo, and why the original logic didn't hold.</p>
+      </div>
+      <div class="quote" style="margin-top: 0.9rem;">A side thought: CMMI Level 5 and Six Sigma companies should be having a field day with AI right now — they hand-wrote every decision, with real traceability behind most of their ADRs. I wonder why their stories are still invisible.</div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">07 · The alignment check</div>
+      <h2>The meeting-room simulation — the great alignment</h2>
+      <div class="grid">
+        <div style="display: grid; gap: 0.9rem;">
+          <div class="card">
+            <h3>Still no code</h3>
+            <p>Still no real code written. I entered a "meeting room" with Claude and asked it to play back everything it understood of the product so far — how deeply it understood what was to be built, and how well it could synthesize my spec instructions.</p>
+          </div>
+          <div class="card">
+            <h3>What I expected vs. what I got</h3>
+            <p>I asked it to question me, to poke holes and surface the gaps in my spec. It did not. I had to be explicit that I could see the gaps myself — I needed it to dig deeper, and to improve and organize the spec documents.</p>
+          </div>
+        </div>
+        <div class="meeting-scene">
+          <div class="meeting-room">
+            <div class="figure figure-human" id="figHuman">
+              <div class="speech-bubble"><span></span><span></span><span></span></div>
+              <svg class="figure-svg" viewBox="0 0 60 90" aria-hidden="true">
+                <circle class="head" cx="30" cy="18" r="14"/>
+                <path class="body" d="M14 88 C14 55 20 46 30 46 C40 46 46 55 46 88 Z"/>
+              </svg>
+              <span class="figure-label">You</span>
+            </div>
+            <div class="meeting-table"></div>
+            <div class="figure figure-bot" id="figBot">
+              <div class="speech-bubble"><span></span><span></span><span></span></div>
+              <svg class="figure-svg" viewBox="0 0 60 90" aria-hidden="true">
+                <line class="antenna" x1="30" y1="2" x2="30" y2="8"/>
+                <circle class="antenna-tip" cx="30" cy="2" r="2.5"/>
+                <rect class="head" x="14" y="8" width="32" height="26" rx="8"/>
+                <circle class="eye" cx="24" cy="21" r="3"/>
+                <circle class="eye" cx="36" cy="21" r="3"/>
+                <rect class="body" x="12" y="40" width="36" height="48" rx="10"/>
+              </svg>
+              <span class="figure-label">Claude</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide chapter-break">
+      <span class="big-num">08</span>
+      <div class="eyebrow">08 · Turning the page</div>
+      <h2>The stage is set — we can start writing (generating) code</h2>
+      <p class="lead">What follows next is a set of revelations.</p>
+      <div class="reveal-list">
+        <div class="card">
+          <span class="n">01</span>
+          <p>Realizations of where I went wrong, where I got it right, where it broke — and why.</p>
+        </div>
+        <div class="card">
+          <span class="n">02</span>
+          <p>How I fixed it, or kept Claude from making the same mistake again.</p>
+        </div>
+        <div class="card">
+          <span class="n">03</span>
+          <p>How Claude's generated code gave me a feedback loop to improve the "completeness" of my spec.</p>
+        </div>
+      </div>
+      <p class="lead" style="margin-top: 1.2rem;">Up next: a demo of what the spec actually looks like.</p>
+    </section>
+
+    <section class="slide" id="slide-system" data-flyer="systemFlyer">
+      <div class="eyebrow">09 · What do we have so far?</div>
+      <h2>Turns out, <em>THIS</em> is the real product. The app is just its output.</h2>
+      <div class="shelf">CLAUDE.md            9 KB   the contract — v13 · bootstrap + the "Never" list
+CONTEXT.md           ≤60 ln the position — hard-capped state, not history
+docs/working/
+  BUILD_LOG.md       853 KB every unit's detail, appended by /post-unit
+  DECISIONS_LOG.md   70 KB  dated decisions + the rejected alternatives
+  API/FRONTEND_TECH  912 KB the monoliths — never read end-to-end
+  → tech-index/      27 KB  routes into them · 34:1
+docs/context/        the context graph — INDEX → STORY_MAP → 15 nodes
+docs/schema/         overview · changelog · snapshots — DDL gets a second look
+docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like code
+.claude/             11 skills · 3 agents · 3 rules · deny-hook · mode
+.githooks/           commit-msg · post-checkout · post-commit</div>
+      <div class="card" style="margin-top: 0.9rem;">
+        <p>Every path on this screen is checkable. The navigation rule at the top of the context graph's index, verbatim: <i>"Read this file, then follow links — never grep-guess where context lives… If a node is missing or stale, fix it in the same changeset."</i></p>
+        <p class="quote" style="margin-top: 0.6rem;">A lying map is worse than no map.</p>
+      </div>
+      <button type="button" class="flyer-btn" id="systemFlyerBtn">Open the guided tour of the shelf →</button>
+      <span class="flyer-hint">Press → again to open the tour, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="systemFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="systemFlyer">
+      <div class="flyer-close" id="systemFlyerClose">← close</div>
+      <h3>A guided tour of the shelf</h3>
+      <p><b>The schema, handled like evidence.</b> 55 canonical migration files — one per table — run in order, journaled by filename: an applied file is never edited again. Every DDL change gets a second look from a dedicated schema review before it runs, lands in the schema changelog, and periodic snapshots record what the schema actually was, not what the docs remember.</p>
+      <p><b>The specs — the newest resident.</b> A spec.md per feature (every gap tagged [ASSUMED] until a human answers) plus a plan.md ticket roadmap, built from a shared template, diffed and reviewed like code. The rule that keeps them honest: a behavior change ships with its spec change in the same PR.</p>
+      <p><b>The context graph.</b> INDEX → STORY_MAP → 15 domain nodes, each ~30–50 lines, kept current after every unit of work. Its own rule, verbatim: "a lying map is worse than no map."</p>
+      <p><b>The monoliths, indexed not split.</b> 912 KB of technical docs stay append-only; a 27 KB index routes into them — 34:1. Nobody reads them end-to-end; nobody is supposed to.</p>
+      <p><b>The sharp edge.</b> A mode flag plus a pre-edit hook: while mode reads "implementing," edits to test files are denied. Git hooks and review agents round out the enforcement.</p>
+    </aside>
+
+    <section class="slide" id="slide-pipeline" data-flyer="pipelineFlyer">
+      <div class="eyebrow">10 · The pipeline</div>
+      <h2>Clarify an epic <em>once</em>. Then every story is execution, not archaeology.</h2>
+      <div class="two-col">
+        <div class="card">
+          <span class="level-tag">Level 1 · Epic — runs once</span>
+          <div class="pipeline-steps-list">
+            <div class="pipeline-step"><span class="num">01</span><span>/start-story — full context + coverage check, never code.</span></div>
+            <div class="pipeline-step"><span class="num">02</span><span>/specify — behavioral spec, every gap tagged [ASSUMED].</span></div>
+            <div class="pipeline-step"><span class="num">03</span><span>/clarify — one question at a time, until none remain.</span></div>
+            <div class="pipeline-step"><span class="num">04</span><span>plan.md — the ticket roadmap, approved once, then it drives.</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="level-tag">Level 2 · Story — per ticket</span>
+          <div class="pipeline-steps-list">
+            <div class="pipeline-step"><span class="num">05</span><span>/plan-unit — one screen: what changes + test plan.</span></div>
+            <div class="pipeline-step gate"><span class="num">06</span><span>tests first — from acceptance criteria, confirmed failing, locked. <b>Gate: hook denies edits.</b></span></div>
+            <div class="pipeline-step"><span class="num">07</span><span>implement — one unit per turn.</span></div>
+            <div class="pipeline-step"><span class="num">08</span><span>verify — build, typecheck, suites. "Looks done" is not a gate.</span></div>
+            <div class="pipeline-step gate"><span class="num">09</span><span>review — code-review agent. <b>Gate: fresh context.</b></span></div>
+            <div class="pipeline-step"><span class="num">10</span><span>/post-unit — docs + graph + state, same changeset, then the human commits.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="quote" style="margin-top: 1rem;">Scaled to task size — a bug fix enters at step 05 with a one-line spec. Not a best practice — our v3. Every step was added after a mistake.</div>
+      <button type="button" class="flyer-btn" id="pipelineFlyerBtn">Open how we came to this →</button>
+      <span class="flyer-hint">Press → again to open the history, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="pipelineFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="pipelineFlyer">
+      <div class="flyer-close" id="pipelineFlyerClose">← close</div>
+      <h3>How we came to this — three versions, all paid for</h3>
+      <p><b>v1 — the 6-step loop</b> (build one, April): spec → build → verify → document, one unit per turn. Good instincts, no teeth: nothing could refuse anything.</p>
+      <p><b>v2 — the 9-step method:</b> added clarify-before-build and docs-in-the-same-changeset. Still policy — the test strategy it relied on was believed for 107 days while zero test files existed.</p>
+      <p><b>The reckoning:</b> a marketing draft claimed a "test-first habit" — a repo grep said no. Two days later a routine session drifted into live code edits and was reverted with an incident report. The process plan written that week opens with the gap list: "No tests. Zero."</p>
+      <p><b>v3 — this pipeline</b> (versioned like code): the epic level exists because ticket-by-ticket clarification kept re-asking the spec; the tests-first gate exists because of the 92%; the review gate exists because the real catches all came from fresh context; the coverage check exists because the tracker arrived mid-project and ticket status doesn't equal feature existence.</p>
+      <p>There is no final version. The process file carries a dated changelog at the bottom for exactly that reason.</p>
+    </aside>
+
+    <section class="slide" id="slide-journey" data-flyer="journeyFlyer">
+      <div class="eyebrow">11 · The journey</div>
+      <p class="lead" style="font-style: italic;">You've seen the shelf and the pipeline. Here's the honest part — we didn't design any of it.</p>
+      <h2>Every piece arrived <em>after</em> something went wrong without it.</h2>
+      <div class="kv-list">
+        <div class="kv-row"><span class="k">the start</span><span class="v">Greenfield, but research first — 67 files / 14 MB of domain evidence before any code. Changelog v1: "Initial baseline. Research complete."</span></div>
+        <div class="kv-row"><span class="k">the method</span><span class="v">6-step loop → 9-step method → two-level spec pipeline (landed 2026-07-17).</span></div>
+        <div class="kv-row"><span class="k">the contract</span><span class="v">CLAUDE.md v1 → v13 — grew to 28 KB, cut 68% the week the pipeline landed.</span></div>
+        <div class="kv-row"><span class="k">the skills</span><span class="v">4 → 11 — spec, clarify, plan, tests, verify, migration, close, and more.</span></div>
+        <div class="kv-row"><span class="k">the state</span><span class="v">CONTEXT.md 352,562 bytes → archived → a 60-line hard cap.</span></div>
+        <div class="kv-row"><span class="k">navigation</span><span class="v">Grep-and-hope → a stale graph nudge (deleted) → the context graph (2026-07-17).</span></div>
+        <div class="kv-row"><span class="k">the tracker</span><span class="v">None → adopted mid-project, with a written rule: "status = increment, not existence."</span></div>
+        <div class="kv-row"><span class="k">hooks</span><span class="v">2 → still 2 — but the nudge became a deny. Composition changed; count didn't.</span></div>
+      </div>
+      <div class="quote" style="margin-top: 1rem;">Each turn has a name, a date, and a bill. Next, the evidence.</div>
+      <button type="button" class="flyer-btn" id="journeyFlyerBtn">Open the quarter, told straight →</button>
+      <span class="flyer-hint">Press → again to open the story, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="journeyFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="journeyFlyer">
+      <div class="flyer-close" id="journeyFlyerClose">← close</div>
+      <h3>The quarter, told straight</h3>
+      <p><b>March.</b> Before a single line of product code: 67 files, 14 MB — the governing act, the bye-laws, photographs of the paper registers. Changelog v1: "Initial baseline. Research complete." The one thing done on time.</p>
+      <p><b>April.</b> First commit on the 3rd. Live deploy on the 22nd — day 19, nine commits, none a feature. The speed was real. So was what it quietly skipped: the test strategy written on the 27th never became a gate.</p>
+      <p><b>May–June.</b> Production stack by day 32. Growth — and sediment: a 352 KB "state" file, an 89-day-stale search hook, a commit convention nobody enforced, docs that started disagreeing with themselves.</p>
+      <p><b>July 16–18. The reckoning.</b> "Is this we did?" — a grep says the test-first habit is fiction. A session drifts into edits it was never allowed to make. In three days: the contract file cut 68%, the state file archived, the nudge hook deleted, the deny hook installed, the commit check finally wired, the two-level pipeline lands.</p>
+      <p><b>Since.</b> 58 test files in 9 days, green across the board, every unit through the gates. Not because discipline was asked for — because it finally had machinery.</p>
+      <p><b>And the method flowed backwards:</b> an earlier build imported this system's standards three weeks after it started — its entire process created in a single commit. Another build became the tooling experiment in between.</p>
+    </aside>
+
+    <section class="slide" id="slide-catches" data-flyer="catchesFlyer">
+      <div class="eyebrow">12 · Evidence: who catches</div>
+      <p class="lead" style="font-style: italic;">When things broke — and they broke — who caught it?</p>
+      <h2>The session writing the code caught <em>zero</em> of its own incidents.</h2>
+      <div class="catch-chart">
+        <div class="catch-row"><span class="label">the human</span><div class="bar-track"><div class="bar" style="width: 100%; background: var(--text);"></div></div><span class="num">10</span></div>
+        <div class="catch-row"><span class="label">fresh-context review</span><div class="bar-track"><div class="bar" style="width: 40%; background: var(--muted);"></div></div><span class="num">4</span></div>
+        <div class="catch-row"><span class="label">the session doing the work</span><div class="bar-track"><div class="bar" style="width: 2%; background: var(--accent-3);"></div></div><span class="num" style="color: var(--accent-3);">0</span></div>
+      </div>
+      <p class="cap">every catch across the recorded incidents, all three builds</p>
+      <div class="card" style="margin-top: 1rem;">
+        <p>And the tests? For <b>107 days there were none</b> — 92% of commits landed before the first test existed. Then a hook made cheating mechanically impossible: <b>58 test files in 9 days</b>, green since.</p>
+      </div>
+      <button type="button" class="flyer-btn" id="catchesFlyerBtn">Open the dated receipts →</button>
+      <span class="flyer-hint">Press → again to open the receipts, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="catchesFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="catchesFlyer">
+      <div class="flyer-close" id="catchesFlyerClose">← close</div>
+      <h3>The dated receipts</h3>
+      <p><b>Human catches, in the developer's own words:</b> "was there no API change expected?" · "no we need high confidence" — found a table missing a sequence column entirely · "wait … i dont think resolution are getting deleted" — a fix just certified, while the container was still serving stale code · a burst-email reversal · "wait i feel we are drifting" · "is docs/context/domains updated?" — and more, each logged.</p>
+      <p><b>Fresh-context review catches (4):</b> a MIME normalisation mismatch after the fix shipped · an early return silently disabling two brand-new statutory rules · an upload limit hardcoded in one place, configurable in two others · one result type quietly swapped for another — catching the implementer's own certified fix. Review also polices the design system: a drift audit found three different delete-button styles on one page; another review flagged 28 instances of token arithmetic across 7 files.</p>
+      <p><b>What the test gate cost, on the record:</b> a locked test file itself had the bug (a bigint count coerced to int) · one rule-flip needed two locked suites unlocked, one unknown until mid-unit · a shared, no-teardown test database caused three cross-class collisions — the fixture is still unfixed, a real trade, carried knowingly.</p>
+      <p><b>The names:</b> separation of duties · four-eyes · TDD red–green (Beck, 2002) · detective vs. preventive controls. The variable that mattered was never intelligence — it was having no stake and no context debt.</p>
+    </aside>
+
+    <section class="slide" id="slide-drift" data-flyer="driftFlyer">
+      <div class="eyebrow">13 · Evidence: what drifts</div>
+      <p class="lead" style="font-style: italic;">So write it down, surely? We wrote everything down.</p>
+      <h2>Everything unenforced drifted. <span class="accent-3">Everything.</span></h2>
+      <div class="evidence-grid">
+        <div class="card evidence">
+          <span class="src">the docs</span>
+          <p>Line 12: "never store raw [national ID]." Line 57: an ALTER that stores it raw — deliberate, logged. <b>45 lines apart. Same file. Both still there.</b></p>
+        </div>
+        <div class="card evidence">
+          <span class="src">the conventions</span>
+          <p>The commit convention shipped on day 2. Enforcement landed on day 107. In between: a <b>466-character subject line</b>, <b>17%</b> adherence.</p>
+        </div>
+        <div class="card evidence">
+          <span class="src">the automation</span>
+          <p>A hook told every search to "consult the graph first." The graph was stale <b>83 of its 89 days</b>. The fix wasn't a repair — it was <b>deletion</b>.</p>
+        </div>
+        <div class="card evidence">
+          <span class="src">the watcher (build three)</span>
+          <p>4,248 telemetry events, <b>97% bookkeeping</b>. Busiest days: <b>after the last commit</b>. Most "significant" file, by its own count: <b>package-lock.json</b>.</p>
+        </div>
+      </div>
+      <div class="quote" style="margin-top: 1rem;">A policy without a mechanism is advice (Hydra, 1975). We re-proved it four different ways.</div>
+      <button type="button" class="flyer-btn" id="driftFlyerBtn">Open the full drift ledger →</button>
+      <span class="flyer-hint">Press → again to open the ledger, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="driftFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="driftFlyer">
+      <div class="flyer-close" id="driftFlyerClose">← close</div>
+      <h3>The full drift ledger</h3>
+      <p><b>Docs:</b> four sources in the repo still disagree about which storage is live — including the contract file contradicting itself ten lines apart. What finally worked wasn't location, it was definition of done: the post-unit step updates the docs in the same changeset.</p>
+      <p><b>Files:</b> every file given a numeric cap stayed under it (one context file: 352,562 bytes → archived → a 60-line hard cap). The two files without a number are now 853 KB and 480 KB. A target set as a number gets beaten; a target set as a sentence gets believed.</p>
+      <p><b>Build one, the control group:</b> no message hook — five commits whose text is the literal shell command that was meant to produce them, unterminated quote and all.</p>
+      <p><b>The watcher, in full:</b> build three logged 62% of its telemetry after its last commit, recorded the wrong stack at confidence 70, and never used its own corrections mechanism — its installer silently repointed the shared hooks path, disabling the neighbouring repo's guardrails, then reported the resulting "low commit quality" as the developer's problem. Its own design constraint, verbatim: "Confident wrong answers are worse than no answers."</p>
+    </aside>
+
+    <section class="slide" id="slide-held" data-flyer="heldFlyer">
+      <div class="eyebrow">14 · Evidence: what held</div>
+      <p class="lead" style="font-style: italic;">So what survived contact with reality?</p>
+      <h2>What held: layers that can <em>refuse</em> — and people who know what <em>correct</em> means.</h2>
+      <div class="kv-list">
+        <div class="kv-row"><span class="k">the database</span><span class="v">AuditLog: UPDATE and DELETE revoked at PostgreSQL, hash-chain on every row. A REVOKE survives a refactor, an ORM upgrade, and a confidently wrong agent. Exemptions exist — written down, dated, named.</span></div>
+        <div class="kv-row"><span class="k">the corpus</span><span class="v">67 files / 14 MB before any code — the act, the bye-laws, photographs of the paper registers. The only layer that holds the intent: it catches mistakes before they exist. Detection time goes negative.</span></div>
+        <div class="kv-row"><span class="k">the human</span><span class="v">"we have bulk send … those goes to all ata once" — product knowledge caught a synchronous email blast no tool had flagged. And the check ran both ways: the assistant caught the inconsistency in the human's own draft appeal.</span></div>
+      </div>
+      <button type="button" class="flyer-btn" id="heldFlyerBtn">Open the honest holes, and the bill →</button>
+      <span class="flyer-hint">Press → again to open the detail, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="heldFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="heldFlyer">
+      <div class="flyer-close" id="heldFlyerClose">← close</div>
+      <h3>The honest holes, and the bill</h3>
+      <p><b>Even the database has two holes:</b> object-storage keys written before the tenant prefix carry no tenant information — ever again, for those objects. And three columns appended to an already-journaled migration existed on no database at all — found as a live 500: column does not exist. Forward-only migrations were re-learned at retail price.</p>
+      <p><b>The corpus paid off in WHERE clauses:</b> the duplicate-number clash guard filtered on an active-member flag — ceased members invisible, a statutory number reissuable on an official document. The fix came from knowing the register, not the code. And the spec learned: a rule specified as one-time became re-runnable when real usage invalidated the premise.</p>
+      <p><b>The human's operating line, verbatim:</b> "I have a READ-ONLY IAM key… give me one command at a time, I run it with my admin creds, you verify before the next." Its bill, logged unprompted: 7 logical commits' worth of uncommitted work in one session. Every guardrail has a bill. We print ours.</p>
+    </aside>
+
+    <section class="slide chapter-break">
+      <div class="eyebrow">15 · The model</div>
+      <div class="formula">cost of a mistake = <em>blast radius × time to detection</em></div>
+      <p class="lead">Every witness you just heard shrinks one of the two terms. Hooks and REVOKEs shrink radius. Reviews and humans shrink detection time. And the 14 MB corpus does the only thing nothing else can: it catches the mistake <span class="accent">before it exists</span> — detection time goes negative.</p>
+      <p class="lead">Boehm published this curve in 1981. We re-derived it in 2026 — at retail price.</p>
+      <div class="named-note">
+        <span class="lbl">We did not discover this</span>
+        It is a restatement of Boehm's cost-of-change curve — <i>Software Engineering Economics</i>, 1981, p. 40. The curve is 45 years old. What's new is not the curve. What's new is how cheap it became to generate the mistakes that ride it.
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">16 · The verdict</div>
+      <h2>The diff can't tell. The <em>caller</em> can.</h2>
+      <p class="lead">Two identical diffs — and the difference lived in the transaction wrapped around them. It scales all the way up. The quality of this system never lived in its code. It lived in:</p>
+      <ul class="plain-list">
+        <li>The hook that <b>refuses</b> — so the writer can't grade their own work.</li>
+        <li>The database grant that makes the illegal state <b>unrepresentable</b>.</li>
+        <li>The reviewer with <b>no stake and no context debt</b>.</li>
+        <li>The human who knows <b>which day all the emails go out</b>.</li>
+        <li>The corpus that knew what <b>correct meant</b> before the first commit.</li>
+      </ul>
+      <div class="quote" style="margin-top: 1rem;">Production of code stopped being the constraint. Judgment, definition, and structure did not — and nothing distributed those the way it distributed code.</div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">17 · Prior art</div>
+      <h2>We invented nothing. Here is the receipt for each rediscovery.</h2>
+      <table class="prior-art-table">
+        <tr><th>what we did</th><th>what it's called</th><th>since · what ours cost</th></tr>
+        <tr><td>A rule only holds when something can refuse.</td><td>Policy vs. mechanism</td><td>1975 · 105 days, a 466-char subject line</td></tr>
+        <tr><td>Implementing session can't edit its own tests.</td><td>Separation of duties</td><td>Older than software · 107 test-less days first</td></tr>
+        <tr><td>Blocking hook vs. review-after.</td><td>Preventive vs. detective controls</td><td>Audit doctrine · 2 of 3 hooks never built</td></tr>
+        <tr><td>The later the find, the higher the bill.</td><td>Boehm's curve</td><td>1981 · re-derived as our equation</td></tr>
+        <tr><td>Decisions logged with rejected alternatives.</td><td>Architecture Decision Records</td><td>2011 · the preference-argued one flipped twice</td></tr>
+        <tr><td>Never edit an applied migration.</td><td>Forward-only migrations</td><td>Industry practice · one live 500 to learn it</td></tr>
+        <tr><td>Isolation at the connection, not a column.</td><td>Defence in depth · structural invariants</td><td>— · one permanent hole in old object keys</td></tr>
+        <tr><td>REVOKE UPDATE/DELETE on the audit table.</td><td>Enforce at the lowest layer</td><td>— · two logged exemptions, zero silent ones</td></tr>
+        <tr><td>Read-only key, one command at a time.</td><td>Least privilege · human-in-the-loop</td><td>1975 · 7 commits' worth held uncommitted</td></tr>
+        <tr><td>Docs updated in the same changeset.</td><td>Definition of done</td><td>Scrum · 853 KB where no cap was set</td></tr>
+        <tr><td>14 MB domain corpus before any code.</td><td>DDD · problem-space discovery</td><td>2003 · the one thing we did on time</td></tr>
+      </table>
+      <p class="quote" style="margin-top: 1rem;">None of this is new. What is new is how cheap it now is to skip — and that skipping is the default.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">18 · Where do I stand on my thesis?</div>
+      <h2>Where do I stand on my thesis?</h2>
+      <div class="two-col" style="align-items: start;">
+        <div>
+          <div class="section-label" style="margin-top: 0.2rem;">What held up</div>
+          <div class="card">
+            <ul>
+              <li>Detailed spec + context + artifacts.</li>
+              <li>AI-assisted spec organization, with human review.</li>
+              <li>Smaller prompts.</li>
+              <li>Smaller, controlled changesets — more commits, good GitHub comments.</li>
+              <li>Manageable code reviews.</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label" style="margin-top: 0.2rem;">Review difficulty, by layer</div>
+          <div class="review-scale">
+            <div class="review-axis">
+              <span></span>
+              <span class="labels"><span>Easy</span><span>Impossible</span></span>
+            </div>
+            <div>
+              <div class="review-row-top">
+                <span class="review-label">C#</span>
+                <div class="review-track"><span class="review-dot" style="left: 10%;"></span></div>
+              </div>
+              <p class="review-caption">Impressed by the code quality, patterns, exception handling etc..</p>
+            </div>
+            <div>
+              <div class="review-row-top">
+                <span class="review-label">Database design</span>
+                <div class="review-track"><span class="review-dot" style="left: 14%;"></span></div>
+              </div>
+              <p class="review-caption">Postgres queries review easily; strong schema modeling, execution-plan aware.</p>
+            </div>
+            <div>
+              <div class="review-row-top">
+                <span class="review-label">JavaScript / TS</span>
+                <div class="review-track"><span class="review-dot" style="left: 55%;"></span></div>
+              </div>
+              <p class="review-caption">High volume. Push non-UI logic to the backend. Still review — don't skip.</p>
+            </div>
+            <div>
+              <div class="review-row-top">
+                <span class="review-label">React components</span>
+                <div class="review-track"><span class="review-dot" style="left: 18%;"></span></div>
+              </div>
+              <p class="review-caption">Reusable, rule-based, obeys instructions well for UI code.</p>
+            </div>
+            <div>
+              <div class="review-row-top">
+                <span class="review-label">HTML / CSS</span>
+                <div class="review-track"><span class="review-dot" style="left: 97%;"></span></div>
+              </div>
+              <p class="review-caption">Impossible to review. I swear, I tried.</p>
+            </div>
+            <div>
+              <div class="review-row-top">
+                <span class="review-label">UI design</span>
+                <div class="review-track"><span class="review-dot" style="left: 85%;"></span></div>
+              </div>
+              <p class="review-caption">Hard to describe in words — try a Figma input next time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="quote" style="margin-top: 1rem;">The thesis mostly holds — write enough spec, review everything, and it works. What it didn't predict: "reviewable" isn't evenly distributed across the stack. That unevenness is where judgment still earns its keep.</div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">19 · Anyone can build</div>
+      <h2>Anyone can build <span class="accent">**</span></h2>
+      <p class="lead" style="font-style: italic;">** ...if they have some experience from the era of hand-writing code, end to end.</p>
+
+      <div class="cartoon-wrap">
+        <svg class="cartoon" viewBox="0 0 1200 430" role="img" aria-label="A machine fires boxes down a conveyor belt at speed toward one inspector with a magnifier facing a teetering pile. The inspector asks: could you slow down? The machine answers: no.">
+          <g class="c-machine">
+            <rect x="45" y="130" width="215" height="150" rx="10" fill="none" stroke="var(--text)" stroke-width="3"/>
+            <rect x="85" y="90" width="135" height="40" rx="6" fill="none" stroke="var(--text)" stroke-width="3"/>
+            <circle class="c-light" cx="80" cy="165" r="7" fill="var(--accent-3)"/>
+            <circle cx="105" cy="165" r="7" fill="none" stroke="var(--text)" stroke-width="2.5"/>
+            <rect x="70" y="205" width="165" height="14" rx="4" fill="none" stroke="var(--text)" stroke-width="2.5"/>
+            <path d="M260 235 L305 235 L305 262" fill="none" stroke="var(--text)" stroke-width="3"/>
+          </g>
+          <g stroke="var(--text)" stroke-width="2.5" fill="var(--surface)">
+            <rect class="c-fly" style="animation-delay:0s" x="318" y="192" width="30" height="30"/>
+            <rect class="c-fly" style="animation-delay:-.8s" x="318" y="192" width="30" height="30"/>
+            <rect class="c-fly" style="animation-delay:-1.6s" x="318" y="192" width="30" height="30"/>
+          </g>
+          <line x1="270" y1="300" x2="960" y2="300" stroke="var(--text)" stroke-width="3.5"/>
+          <g fill="none" stroke="var(--text)" stroke-width="2.5">
+            <g class="c-roller"><circle cx="300" cy="316" r="11"/><line x1="300" y1="316" x2="300" y2="306"/></g>
+            <g class="c-roller"><circle cx="420" cy="316" r="11"/><line x1="420" y1="316" x2="420" y2="306"/></g>
+            <g class="c-roller"><circle cx="540" cy="316" r="11"/><line x1="540" y1="316" x2="540" y2="306"/></g>
+            <g class="c-roller"><circle cx="660" cy="316" r="11"/><line x1="660" y1="316" x2="660" y2="306"/></g>
+            <g class="c-roller"><circle cx="780" cy="316" r="11"/><line x1="780" y1="316" x2="780" y2="306"/></g>
+            <g class="c-roller"><circle cx="900" cy="316" r="11"/><line x1="900" y1="316" x2="900" y2="306"/></g>
+          </g>
+          <g class="c-belt" stroke="var(--text)" stroke-width="2.5" fill="var(--surface)">
+            <rect class="c-fadein" x="480" y="264" width="34" height="34" transform="rotate(2 497 281)"/>
+            <rect x="560" y="264" width="34" height="34"/>
+            <rect x="640" y="264" width="34" height="34" transform="rotate(-4 657 281)"/>
+            <rect x="720" y="264" width="34" height="34" transform="rotate(3 737 281)"/>
+            <rect class="c-fadeout" x="800" y="264" width="34" height="34"/>
+          </g>
+          <g class="c-pile" stroke="var(--text)" stroke-width="2.5" fill="var(--surface)">
+            <rect x="1035" y="262" width="38" height="38"/>
+            <rect x="1078" y="262" width="38" height="38" transform="rotate(2 1097 281)"/>
+            <rect x="1050" y="222" width="38" height="38" transform="rotate(-7 1069 241)"/>
+            <rect x="1062" y="182" width="38" height="38" transform="rotate(9 1081 201)"/>
+            <rect x="1048" y="143" width="38" height="38" transform="rotate(-13 1067 162)"/>
+            <rect x="1066" y="104" width="38" height="38" transform="rotate(17 1085 123)"/>
+          </g>
+          <g stroke="var(--text)" stroke-width="3" fill="none">
+            <circle cx="975" cy="212" r="14"/>
+            <line x1="975" y1="226" x2="975" y2="268"/>
+            <line x1="975" y1="268" x2="962" y2="298"/><line x1="975" y1="268" x2="988" y2="298"/>
+            <line x1="975" y1="238" x2="952" y2="252"/>
+            <line x1="975" y1="238" x2="998" y2="230"/>
+            <circle cx="946" cy="256" r="9"/>
+            <line x1="940" y1="263" x2="932" y2="272"/>
+          </g>
+          <g>
+            <g class="c-b1">
+              <rect x="836" y="118" width="196" height="34" rx="17" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <line x1="952" y1="152" x2="968" y2="196" stroke="var(--text)" stroke-width="2"/>
+              <text x="934" y="140" font-size="15" fill="var(--text)" text-anchor="middle">could you slow down?</text>
+            </g>
+            <g class="c-b2">
+              <rect x="150" y="30" width="58" height="34" rx="17" fill="none" stroke="var(--accent-3)" stroke-width="2.5"/>
+              <line x1="172" y1="64" x2="160" y2="88" stroke="var(--accent-3)" stroke-width="2.5"/>
+              <text x="179" y="53" font-size="17" font-weight="700" fill="var(--accent-3)" text-anchor="middle">no.</text>
+            </g>
+          </g>
+          <text x="152" y="330" font-size="13" letter-spacing="3" fill="var(--muted)" text-anchor="middle">PRODUCTION OF CODE</text>
+          <text x="975" y="345" font-size="13" letter-spacing="3" fill="var(--muted)" text-anchor="middle">JUDGEMENT</text>
+          <line x1="330" y1="372" x2="620" y2="372" stroke="var(--muted)" stroke-width="2"/>
+          <path d="M620 372 l-12 -6 v12 z" fill="var(--muted)"/>
+          <text x="640" y="377" font-size="13" letter-spacing="2" fill="var(--muted)">ONE OF THESE SCALED. THE OTHER IS THIS TALK.</text>
+        </svg>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <ul>
+            <li>Clarity still wins.</li>
+            <li>Decision-making requires trained acumen.</li>
+            <li>Talent is still required — to understand what good looks like.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <p class="quote" style="margin: 0;">The spec, the gates, the graph, the judgment. That's what turns an idea into a product.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide chapter-break">
+      <div class="eyebrow">20 · Questions</div>
+      <h2>Why should I suffer alone? Here is my insecurity…</h2>
+      <div style="max-width: 700px; margin: 0 auto; display: grid; gap: 0.8rem; text-align: left;">
+        <div class="card">
+          <p>Will we have enough problems — for everyone to get paid — left in the world to solve? Problems may not, should not, age anymore, given that building solutions for them is no longer a factor of time.</p>
+        </div>
+        <div class="card">
+          <p>If AI vanishes — because of unsolved capital and resource-sustainability issues — how would this sustain? What kind of future should we prepare ourselves for?</p>
+        </div>
+      </div>
+      <div class="quote" style="margin-top: 1.2rem; max-width: 700px; margin-left: auto; margin-right: auto;">The room is now open for answers. I mean questions, if any.</div>
+      <p style="margin-top: 1.6rem; font-family: var(--font-serif); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 700; color: var(--accent-2);">Thank you for your time!</p>
+    </section>
+
+    <div class="footer">
+      <span id="slideCounter">1 / 10</span>
+      <div class="nav">
+        <button type="button" id="prevBtn">← Prev</button>
+        <button type="button" id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const progressBar = document.getElementById('progressBar');
+    const slideCounter = document.getElementById('slideCounter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
+
+    function flyerFor(slide) {
+      const id = slide && slide.getAttribute('data-flyer');
+      return id ? document.getElementById(id) : null;
+    }
+
+    function isFlyerOpen(flyer) {
+      return !!(flyer && flyer.classList.contains('open'));
+    }
+
+    function openFlyer(flyer) {
+      if (!flyer) return;
+      flyer.classList.add('open');
+      const backdrop = document.getElementById(flyer.id + 'Backdrop');
+      if (backdrop) backdrop.classList.add('open');
+    }
+
+    function closeFlyer(flyer) {
+      if (!flyer) return;
+      flyer.classList.remove('open');
+      const backdrop = document.getElementById(flyer.id + 'Backdrop');
+      if (backdrop) backdrop.classList.remove('open');
+    }
+
+    function closeAllFlyers() {
+      document.querySelectorAll('.flyer-panel.open').forEach(closeFlyer);
+    }
+
+    function update() {
+      slides.forEach((slide, index) => slide.classList.toggle('active', index === current));
+      const pct = ((current + 1) / slides.length) * 100;
+      progressBar.style.width = `${pct}%`;
+      slideCounter.textContent = `${current + 1} / ${slides.length}`;
+    }
+
+    function show(index) {
+      closeAllFlyers();
+      current = (index + slides.length) % slides.length;
+      update();
+    }
+
+    function goNext() {
+      const flyer = flyerFor(slides[current]);
+      if (flyer && !isFlyerOpen(flyer)) {
+        openFlyer(flyer);
+        return;
+      }
+      if (flyer && isFlyerOpen(flyer)) {
+        closeFlyer(flyer);
+      }
+      show(current + 1);
+    }
+
+    function goPrev() {
+      const flyer = flyerFor(slides[current]);
+      if (flyer && isFlyerOpen(flyer)) {
+        closeFlyer(flyer);
+        return;
+      }
+      show(current - 1);
+    }
+
+    prevBtn.addEventListener('click', goPrev);
+    nextBtn.addEventListener('click', goNext);
+
+    document.querySelectorAll('.flyer-panel').forEach((panel) => {
+      const btn = document.getElementById(panel.id + 'Btn');
+      const close = document.getElementById(panel.id + 'Close');
+      const backdrop = document.getElementById(panel.id + 'Backdrop');
+      if (btn) btn.addEventListener('click', () => openFlyer(panel));
+      if (close) close.addEventListener('click', () => closeFlyer(panel));
+      if (backdrop) backdrop.addEventListener('click', () => closeFlyer(panel));
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        goNext();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        goPrev();
+      }
+    });
+
+    update();
+
+    const figHuman = document.getElementById('figHuman');
+    const figBot = document.getElementById('figBot');
+    if (figHuman && figBot) {
+      let turn = 0;
+      const takeTurn = () => {
+        figHuman.classList.toggle('talking', turn % 2 === 0);
+        figBot.classList.toggle('talking', turn % 2 === 1);
+        turn++;
+      };
+      takeTurn();
+      setInterval(takeTurn, 1800);
+    }
+  </script>
+</body>
+</html>
