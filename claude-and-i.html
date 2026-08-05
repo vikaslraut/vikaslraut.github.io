@@ -286,6 +286,41 @@
 
     .card.evidence p { font-size: 0.92rem; }
 
+    .vscode-link {
+      position: absolute;
+      top: 1.3rem;
+      right: 1.8rem;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent-2);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem 0.35rem 0.55rem;
+      text-decoration: none;
+      box-shadow: 0 1px 2px rgba(61, 57, 41, 0.06);
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+
+    .vscode-link:hover { border-color: var(--accent); color: var(--accent-3); background: var(--bg-soft); }
+    .vscode-link svg { width: 13px; height: 13px; flex: none; }
+
+    .link-row {
+      position: absolute;
+      top: 1.3rem;
+      right: 1.8rem;
+      z-index: 2;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .link-row .vscode-link { position: static; top: auto; right: auto; }
+
     .flyer-btn {
       margin-top: 1.1rem;
       font-family: var(--font-sans);
@@ -763,7 +798,7 @@
     <section class="slide active">
       <div class="eyebrow">Caizin · Engineering Share-out</div>
       <h1>Claude Code, Spec-Driven Development, and the SocDocLoc Story</h1>
-      <p class="lead">A practical view of how an AI coding agent changed the pace of delivery, the role of the spec, and the discipline required to ship real software.</p>
+      <p class="lead">A practical view of how an <b>AI</b> changed the pace of delivery, the role of the spec, and the discipline required to ship real software.</p>
       <div style="margin-top: 1.2rem;">
         <span class="pill">Vikas Raut</span>
         <span class="pill">SocDocLoc</span>
@@ -789,6 +824,10 @@
     </section>
 
     <section class="slide">
+      <div class="link-row">
+        <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/product/README.md" title="Open docs/product/README.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>product/README.md</a>
+        <a class="vscode-link" href="https://dev.socdocloc.com" target="_blank" rel="noopener noreferrer" title="Open the live app — dev.socdocloc.com"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>dev.socdocloc.com</a>
+      </div>
       <div class="eyebrow">02 · The context</div>
       <h2>SocDocLoc — a brief to set the context of this conversation</h2>
       <div class="two-col">
@@ -838,6 +877,7 @@
     </section>
 
     <section class="slide">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/context/domains" title="Open docs/context/domains in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>context/domains/</a>
       <div class="eyebrow">04 · Getting real</div>
       <h2>How do I "really" start? — the part no one warns you about with spec-driven, AI-assisted build-out</h2>
       <div class="two-col">
@@ -862,6 +902,7 @@
     </section>
 
     <section class="slide">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/references/Laws" title="Open docs/references/Laws in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>references/Laws/</a>
       <div class="eyebrow">05 · The writing</div>
       <h2>3 weeks of just "writing"</h2>
       <div class="two-col">
@@ -888,21 +929,25 @@
     </section>
 
     <section class="slide">
+      <div class="link-row">
+        <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/working/DATA_SCORECARD_SPEC.md" title="Open docs/working/DATA_SCORECARD_SPEC.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>DATA_SCORECARD_SPEC.md</a>
+        <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/working/DECISIONS_LOG.md:201" title="Open DECISIONS_LOG.md at LG-3 — an old, rescinded decision (2026-05-24)"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>reverted (old)</a>
+        <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/working/DECISIONS_LOG.md:91" title="Open DECISIONS_LOG.md at AGREEMENT-DIALOG-DEPOSIT-WARNING — a recent, reversed decision (2026-07-26)"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>reverted (latest)</a>
+      </div>
       <div class="eyebrow">06 · The WHY</div>
       <h2>Describing the solution architecture — like a "good" (engineer) boy</h2>
       <div class="two-col">
         <div class="card">
           <h3>Beyond WHAT and HOW</h3>
-          <p>I don't recall the last time I wrote this much about my engineering decisions. This time it went beyond the WHAT and the HOW, into the WHY — in plain terms, ADRs: a decision, its reasoning, and what I didn't choose. The payoff wasn't just for me: the same WHY documentation became context Claude drew on across later sessions, keeping decisions consistent long after the reasoning had left short-term memory.</p>
+          <p>I don't recall the last time I wrote this much about my engineering decisions. This time it went beyond the WHAT and the HOW, into the WHY — in plain terms, ADRs (Architecture Decision Records): a decision, its reasoning, and what I didn't choose. The payoff wasn't just for me: the same WHY documentation became context Claude drew on across later sessions, keeping decisions consistent long after the reasoning had left short-term memory.</p>
         </div>
         <div class="card">
           <h3>Decision → rationale</h3>
           <div class="kv-list" style="margin-top: 0;">
             <div class="kv-row"><span class="k">Encryption at rest</span><span class="v">Not a default habit — required for PII, not optional.</span></div>
             <div class="kv-row"><span class="k">Secure transfer, always</span><span class="v">No exceptions carved out for "internal network."</span></div>
-            <div class="kv-row"><span class="k">PII always masked</span><span class="v">Same obligation, enforced at the query layer.</span></div>
+            <div class="kv-row"><span class="k">PII masking is scoped</span><span class="v">Masked by default — unmasked only where an existing trust boundary already allows it, and it's written down so it doesn't become precedent.</span></div>
             <div class="kv-row"><span class="k">Secrets: where + rotation</span><span class="v">Written down so rotation is a schedule, not a memory.</span></div>
-            <div class="kv-row"><span class="k">Automated vs. backend job</span><span class="v">Invisible-to-the-user work still needs a named owner.</span></div>
           </div>
         </div>
       </div>
@@ -978,6 +1023,7 @@
     </section>
 
     <section class="slide" id="slide-system" data-flyer="systemFlyer">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/CLAUDE.md" title="Open CLAUDE.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>CLAUDE.md</a>
       <div class="eyebrow">09 · What do we have so far?</div>
       <h2>Turns out, <em>THIS</em> is the real product. The app is just its output.</h2>
       <div class="shelf">CLAUDE.md            9 KB   the contract — v13 · bootstrap + the "Never" list
@@ -1004,14 +1050,19 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     <aside class="flyer-panel" id="systemFlyer">
       <div class="flyer-close" id="systemFlyerClose">← close</div>
       <h3>A guided tour of the shelf</h3>
+      <p><b>CLAUDE.md — the contract.</b> The first thing read, every session. v13 — versioned like code, not a doc that just accretes. Two halves: bootstrap (how to orient in this repo) and the "Never" list (hard rules — never edit a locked test, never skip review).</p>
+      <p><b>CONTEXT.md — the position, not the history.</b> Hard-capped at 60 lines, on purpose. A number gets enforced; a sentence like "keep this short" gets ignored. The cap is what stops it drifting back into a 352 KB dumping ground.</p>
+      <p><b>BUILD_LOG.md and DECISIONS_LOG.md — the two ledgers.</b> BUILD_LOG is append-only, auto-written by /post-unit, 853 KB, never read end-to-end — it's an audit trail. DECISIONS_LOG is the ADR log from earlier: dated decisions plus the alternatives that got rejected and why.</p>
       <p><b>The schema, handled like evidence.</b> 55 canonical migration files — one per table — run in order, journaled by filename: an applied file is never edited again. Every DDL change gets a second look from a dedicated schema review before it runs, lands in the schema changelog, and periodic snapshots record what the schema actually was, not what the docs remember.</p>
       <p><b>The specs — the newest resident.</b> A spec.md per feature (every gap tagged [ASSUMED] until a human answers) plus a plan.md ticket roadmap, built from a shared template, diffed and reviewed like code. The rule that keeps them honest: a behavior change ships with its spec change in the same PR.</p>
       <p><b>The context graph.</b> INDEX → STORY_MAP → 15 domain nodes, each ~30–50 lines, kept current after every unit of work. Its own rule, verbatim: "a lying map is worse than no map."</p>
       <p><b>The monoliths, indexed not split.</b> 912 KB of technical docs stay append-only; a 27 KB index routes into them — 34:1. Nobody reads them end-to-end; nobody is supposed to.</p>
+      <p><b>.githooks — the three that actually run.</b> commit-msg enforces the Jira-tag commit format; post-checkout and post-commit both auto-rebuild the knowledge graph, so a plain git operation can't let it go stale.</p>
       <p><b>The sharp edge.</b> A mode flag plus a pre-edit hook: while mode reads "implementing," edits to test files are denied. Git hooks and review agents round out the enforcement.</p>
     </aside>
 
     <section class="slide" id="slide-pipeline" data-flyer="pipelineFlyer">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/.claude/skills" title="Open .claude/skills in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>.claude/skills/</a>
       <div class="eyebrow">10 · The pipeline</div>
       <h2>Clarify an epic <em>once</em>. Then every story is execution, not archaeology.</h2>
       <div class="two-col">
@@ -1044,7 +1095,18 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     <div class="flyer-backdrop" id="pipelineFlyerBackdrop"></div>
     <aside class="flyer-panel" id="pipelineFlyer">
       <div class="flyer-close" id="pipelineFlyerClose">← close</div>
-      <h3>How we came to this — three versions, all paid for</h3>
+      <h3>The ten steps, one line each</h3>
+      <p><b>01 /start-story.</b> Pulls full context for the feature area, runs a coverage check — does part of this already exist? Writes zero code.</p>
+      <p><b>02 /specify.</b> Produces the behavioral spec. Every open question or guess gets tagged [ASSUMED] instead of silently decided.</p>
+      <p><b>03 /clarify.</b> Walks every [ASSUMED] tag, one question at a time, until none remain. Forces a human decision instead of a quiet model guess.</p>
+      <p><b>04 plan.md.</b> The resulting ticket roadmap. Approved once by a human, then it drives every story below — this is the epic level, it doesn't repeat per ticket.</p>
+      <p><b>05 /plan-unit.</b> Scopes one screen or unit: exactly what changes, plus its test plan.</p>
+      <p><b>06 tests first.</b> Written from the spec's acceptance criteria, confirmed failing (red), then locked. The gate here is mechanical, not a policy: a hook denies any edit to test files once locked.</p>
+      <p><b>07 implement.</b> One unit per turn — small, reviewable slices, not sprawling diffs.</p>
+      <p><b>08 verify.</b> Build, typecheck, and suites must pass. "Looks done" doesn't count — only a green run does.</p>
+      <p><b>09 review.</b> A code-review agent, run in a fresh context window — no memory of writing the code, same principle as a human reviewer who didn't author the diff.</p>
+      <p><b>10 /post-unit.</b> Docs, context graph, and state all updated in the same changeset as the code. Only then does a human commit.</p>
+      <h3 style="margin-top: 1.4rem;">How we came to this — three versions, all paid for</h3>
       <p><b>v1 — the 6-step loop</b> (build one, April): spec → build → verify → document, one unit per turn. Good instincts, no teeth: nothing could refuse anything.</p>
       <p><b>v2 — the 9-step method:</b> added clarify-before-build and docs-in-the-same-changeset. Still policy — the test strategy it relied on was believed for 107 days while zero test files existed.</p>
       <p><b>The reckoning:</b> a marketing draft claimed a "test-first habit" — a repo grep said no. Two days later a routine session drifted into live code edits and was reverted with an incident report. The process plan written that week opens with the gap list: "No tests. Zero."</p>
@@ -1053,6 +1115,7 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     </aside>
 
     <section class="slide" id="slide-journey" data-flyer="journeyFlyer">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/working/AI_DEV_PROCESS_PLAN.md" title="Open docs/working/AI_DEV_PROCESS_PLAN.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>AI_DEV_PROCESS_PLAN.md</a>
       <div class="eyebrow">11 · The journey</div>
       <p class="lead" style="font-style: italic;">You've seen the shelf and the pipeline. Here's the honest part — we didn't design any of it.</p>
       <h2>Every piece arrived <em>after</em> something went wrong without it.</h2>
@@ -1084,6 +1147,7 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     </aside>
 
     <section class="slide" id="slide-catches" data-flyer="catchesFlyer">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/working/BUILD_LOG.md" title="Open docs/working/BUILD_LOG.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>BUILD_LOG.md</a>
       <div class="eyebrow">12 · Evidence: who catches</div>
       <p class="lead" style="font-style: italic;">When things broke — and they broke — who caught it?</p>
       <h2>The session writing the code caught <em>zero</em> of its own incidents.</h2>
@@ -1111,6 +1175,7 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     </aside>
 
     <section class="slide" id="slide-drift" data-flyer="driftFlyer">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/context/INDEX.md" title="Open docs/context/INDEX.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>context/INDEX.md</a>
       <div class="eyebrow">13 · Evidence: what drifts</div>
       <p class="lead" style="font-style: italic;">So write it down, surely? We wrote everything down.</p>
       <h2>Everything unenforced drifted. <span class="accent-3">Everything.</span></h2>
@@ -1148,6 +1213,7 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     </aside>
 
     <section class="slide" id="slide-held" data-flyer="heldFlyer">
+      <a class="vscode-link" href="vscode://file/Users/v/work/society-desk/docs/schema/SCHEMA_CHANGELOG.md" title="Open docs/schema/SCHEMA_CHANGELOG.md in VS Code"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>SCHEMA_CHANGELOG.md</a>
       <div class="eyebrow">14 · Evidence: what held</div>
       <p class="lead" style="font-style: italic;">So what survived contact with reality?</p>
       <h2>What held: layers that can <em>refuse</em> — and people who know what <em>correct</em> means.</h2>
@@ -1181,41 +1247,7 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     </section>
 
     <section class="slide">
-      <div class="eyebrow">16 · The verdict</div>
-      <h2>The diff can't tell. The <em>caller</em> can.</h2>
-      <p class="lead">Two identical diffs — and the difference lived in the transaction wrapped around them. It scales all the way up. The quality of this system never lived in its code. It lived in:</p>
-      <ul class="plain-list">
-        <li>The hook that <b>refuses</b> — so the writer can't grade their own work.</li>
-        <li>The database grant that makes the illegal state <b>unrepresentable</b>.</li>
-        <li>The reviewer with <b>no stake and no context debt</b>.</li>
-        <li>The human who knows <b>which day all the emails go out</b>.</li>
-        <li>The corpus that knew what <b>correct meant</b> before the first commit.</li>
-      </ul>
-      <div class="quote" style="margin-top: 1rem;">Production of code stopped being the constraint. Judgment, definition, and structure did not — and nothing distributed those the way it distributed code.</div>
-    </section>
-
-    <section class="slide">
-      <div class="eyebrow">17 · Prior art</div>
-      <h2>We invented nothing. Here is the receipt for each rediscovery.</h2>
-      <table class="prior-art-table">
-        <tr><th>what we did</th><th>what it's called</th><th>since · what ours cost</th></tr>
-        <tr><td>A rule only holds when something can refuse.</td><td>Policy vs. mechanism</td><td>1975 · 105 days, a 466-char subject line</td></tr>
-        <tr><td>Implementing session can't edit its own tests.</td><td>Separation of duties</td><td>Older than software · 107 test-less days first</td></tr>
-        <tr><td>Blocking hook vs. review-after.</td><td>Preventive vs. detective controls</td><td>Audit doctrine · 2 of 3 hooks never built</td></tr>
-        <tr><td>The later the find, the higher the bill.</td><td>Boehm's curve</td><td>1981 · re-derived as our equation</td></tr>
-        <tr><td>Decisions logged with rejected alternatives.</td><td>Architecture Decision Records</td><td>2011 · the preference-argued one flipped twice</td></tr>
-        <tr><td>Never edit an applied migration.</td><td>Forward-only migrations</td><td>Industry practice · one live 500 to learn it</td></tr>
-        <tr><td>Isolation at the connection, not a column.</td><td>Defence in depth · structural invariants</td><td>— · one permanent hole in old object keys</td></tr>
-        <tr><td>REVOKE UPDATE/DELETE on the audit table.</td><td>Enforce at the lowest layer</td><td>— · two logged exemptions, zero silent ones</td></tr>
-        <tr><td>Read-only key, one command at a time.</td><td>Least privilege · human-in-the-loop</td><td>1975 · 7 commits' worth held uncommitted</td></tr>
-        <tr><td>Docs updated in the same changeset.</td><td>Definition of done</td><td>Scrum · 853 KB where no cap was set</td></tr>
-        <tr><td>14 MB domain corpus before any code.</td><td>DDD · problem-space discovery</td><td>2003 · the one thing we did on time</td></tr>
-      </table>
-      <p class="quote" style="margin-top: 1rem;">None of this is new. What is new is how cheap it now is to skip — and that skipping is the default.</p>
-    </section>
-
-    <section class="slide">
-      <div class="eyebrow">18 · Where do I stand on my thesis?</div>
+      <div class="eyebrow">16 · Where do I stand on my thesis?</div>
       <h2>Where do I stand on my thesis?</h2>
       <div class="two-col" style="align-items: start;">
         <div>
@@ -1285,8 +1317,45 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
       <div class="quote" style="margin-top: 1rem;">The thesis mostly holds — write enough spec, review everything, and it works. What it didn't predict: "reviewable" isn't evenly distributed across the stack. That unevenness is where judgment still earns its keep.</div>
     </section>
 
+    <section class="slide" id="slide-verdict" data-flyer="priorArtFlyer">
+      <div class="eyebrow">17 · Not new to AI — just old discipline</div>
+      <h2>What actually made the difference wasn't new. It was there already.</h2>
+      <p class="lead">Honest attribution: none of these five things are AI-era inventions. They're standard software discipline I already had from before — applied on top of an agent that removed the code-writing bottleneck. AI didn't teach me to want a hook that refuses, or a schema constraint over a comment. Pre-AI SDLC experience did. What changed is how tempting, and how cheap, skipping them became.</p>
+      <ul class="plain-list">
+        <li>A pipeline step that can actually <b>say no</b> — not a suggestion, a gate.</li>
+        <li>Weight that used to live in "please remember" pushed into <b>structure</b> instead.</li>
+        <li>Never the same session as its <b>only reviewer</b>.</li>
+        <li>A human still anchored in <b>domain reality</b> no tool has.</li>
+        <li>Domain research front-loaded <b>before</b> the first line of code.</li>
+      </ul>
+      <div class="quote" style="margin-top: 1rem;">None of this required AI to be true. It just got a lot easier to find out the hard way, once code stopped being the bottleneck.</div>
+      <button type="button" class="flyer-btn" id="priorArtFlyerBtn">Open the receipt →</button>
+      <span class="flyer-hint">Press → again to open the receipt, and once more to continue.</span>
+    </section>
+
+    <div class="flyer-backdrop" id="priorArtFlyerBackdrop"></div>
+    <aside class="flyer-panel" id="priorArtFlyer">
+      <div class="flyer-close" id="priorArtFlyerClose">← close</div>
+      <h3>We invented nothing. Here's the receipt for each rediscovery.</h3>
+      <table class="prior-art-table">
+        <tr><th>what we did</th><th>what it's called</th><th>since · what ours cost</th></tr>
+        <tr><td>A rule only holds when something can refuse.</td><td>Policy vs. mechanism</td><td>1975 · 105 days, a 466-char subject line</td></tr>
+        <tr><td>Implementing session can't edit its own tests.</td><td>Separation of duties</td><td>Older than software · 107 test-less days first</td></tr>
+        <tr><td>Blocking hook vs. review-after.</td><td>Preventive vs. detective controls</td><td>Audit doctrine · 2 of 3 hooks never built</td></tr>
+        <tr><td>The later the find, the higher the bill.</td><td>Boehm's curve</td><td>1981 · re-derived as our equation</td></tr>
+        <tr><td>Decisions logged with rejected alternatives.</td><td>Architecture Decision Records</td><td>2011 · the preference-argued one flipped twice</td></tr>
+        <tr><td>Never edit an applied migration.</td><td>Forward-only migrations</td><td>Industry practice · one live 500 to learn it</td></tr>
+        <tr><td>Isolation at the connection, not a column.</td><td>Defence in depth · structural invariants</td><td>— · one permanent hole in old object keys</td></tr>
+        <tr><td>REVOKE UPDATE/DELETE on the audit table.</td><td>Enforce at the lowest layer</td><td>— · two logged exemptions, zero silent ones</td></tr>
+        <tr><td>Read-only key, one command at a time.</td><td>Least privilege · human-in-the-loop</td><td>1975 · 7 commits' worth held uncommitted</td></tr>
+        <tr><td>Docs updated in the same changeset.</td><td>Definition of done</td><td>Scrum · 853 KB where no cap was set</td></tr>
+        <tr><td>14 MB domain corpus before any code.</td><td>DDD · problem-space discovery</td><td>2003 · the one thing we did on time</td></tr>
+      </table>
+      <p class="quote" style="margin-top: 1rem;">None of this is new. What is new is how cheap it now is to skip — and that skipping is the default.</p>
+    </aside>
+
     <section class="slide">
-      <div class="eyebrow">19 · Anyone can build</div>
+      <div class="eyebrow">18 · Anyone can build</div>
       <h2>Anyone can build <span class="accent">**</span></h2>
       <p class="lead" style="font-style: italic;">** ...if they have some experience from the era of hand-writing code, end to end.</p>
 
@@ -1373,7 +1442,7 @@ docs/specs/…/        spec.md + plan.md per feature — behavior, reviewed like
     </section>
 
     <section class="slide chapter-break">
-      <div class="eyebrow">20 · Questions</div>
+      <div class="eyebrow">19 · Questions</div>
       <h2>Why should I suffer alone? Here is my insecurity…</h2>
       <div style="max-width: 700px; margin: 0 auto; display: grid; gap: 0.8rem; text-align: left;">
         <div class="card">
