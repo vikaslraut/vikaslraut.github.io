@@ -1,0 +1,8 @@
+# Private speaker material — never publish.
+# This repo is public and served by GitHub Pages: anything committed here
+# is readable by anyone with the URL.
+TALK_NOTES.md
+notes.html
+transacript.txt
+
+.DS_Store
