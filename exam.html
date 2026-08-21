@@ -210,6 +210,37 @@ p{margin:0 0 16px}
 .ex-palgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .ex-palgrid .chip{width:100%;height:29px}
 
+.skin-tabs{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.skin-tab{border:1px solid var(--rule);background:var(--surface);color:var(--muted);
+  font:inherit;font-size:13px;border-radius:4px;padding:7px 13px;display:flex;align-items:center;gap:8px}
+.skin-tab.on{background:#fff;color:var(--ink);border-color:var(--accent);font-weight:600}
+.skin-pill{font-size:10.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;
+  border-radius:999px;padding:2px 7px;border:1px solid transparent}
+.skin-pill.ok{background:rgba(120,161,125,.16);color:#3f6446;border-color:rgba(120,161,125,.4)}
+.skin-pill.pend{background:rgba(194,164,104,.18);color:#7a5f21;border-color:rgba(194,164,104,.5)}
+.skin-note{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.5;
+  color:#7a5f21;background:rgba(194,164,104,.11);border:1px solid rgba(194,164,104,.4);
+  border-left-width:3px;border-radius:3px;padding:9px 12px;margin-bottom:10px;max-width:96ch}
+.skin-note b{color:#5f4a19}
+.ex-skin[hidden]{display:none}
+
+/* --- MHT-CET variant: palette left, legend under it, no explicit save --- */
+.ex.cet .ex-main{grid-template-columns:236px 1fr}
+.ex.cet .ex-pal{display:flex;flex-direction:column;border-right:1px solid #e3e6ea;background:#fbfcfd}
+.ex.cet .ex-q{border-right:none}
+.ex.cet .ex-legend{margin-bottom:0;margin-top:auto;padding-top:14px;
+  border-top:1px solid #e8ebee;grid-template-columns:auto 1fr;gap:6px 8px;font-size:11px}
+.ex.cet .ex-palgrid{grid-template-columns:repeat(5,1fr)}
+.ex.cet .ex-opts{grid-template-columns:1fr 1fr}
+.ex-utility{display:flex;align-items:center;gap:14px;padding:8px 22px;font-size:12.5px;
+  border-bottom:1px solid #eceff2;background:#fff;color:#3d434f}
+.ex-check{display:flex;align-items:center;gap:7px}
+.ex-check i{width:13px;height:13px;border:1.5px solid #9aa1ac;border-radius:2px;
+  background:#fff;display:inline-block;flex:none}
+.ex-zoom{margin-left:auto;display:flex;align-items:center;gap:6px;color:#767d89}
+.ex-zoom .z{border:1px solid #d5d9e0;border-radius:3px;padding:2px 8px;
+  background:#fff;color:#3d434f;font-size:12px}
+
 /* ============================ states slide ============================ */
 .states{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:34px}
 .state{background:var(--surface);border:1px solid var(--rule);border-radius:4px;
@@ -444,7 +475,8 @@ p{margin:0 0 16px}
 
 
 /* ============================ exam setup ============================ */
-.st{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+/* renamed from .st — collided with .seat .st in the live monitor */
+.setup{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
 .st-top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid #e3e6ea}
 .st-tpl{display:flex;gap:6px;align-items:center;padding:9px 18px;border-bottom:1px solid #e3e6ea;
   background:#fbfcfd;flex-wrap:wrap}
@@ -557,10 +589,9 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
   font-size:13px;flex:none;margin-top:1px}
 .mon-alert h4{margin:0 0 3px;font-size:14px;font-weight:600;font-family:"Public Sans",sans-serif}
 .mon-alert p{margin:0;font-size:13px;color:#7d5749}
-.mon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;padding:16px}
-.seat{border:1px solid #e3e6ea;border-radius:3px;padding:8px 10px;background:#fff}
-.seat .pc{font-family:"Roboto Mono",monospace;font-size:10px;color:#949cab}
-.seat .nm{font-size:12.5px;font-weight:500;margin:2px 0 5px;white-space:nowrap;
+.mon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;padding:16px}
+.seat{border:1px solid #e3e6ea;border-radius:3px;padding:8px 10px;background:#fff;min-width:0}
+.seat .nm{font-size:12.5px;font-weight:500;margin:0 0 5px;white-space:nowrap;
           overflow:hidden;text-overflow:ellipsis}
 .seat .st{font-size:10.5px;color:#5a626e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seat.ok{border-left:3px solid var(--c-good)}
@@ -628,6 +659,10 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
    1366x768 projector and a large monitor alike.
    ============================================================ */
 @media (min-width:901px) and (max-height:900px){
+  .skin-tabs{margin-bottom:9px}
+  .skin-note{padding:7px 11px;font-size:12px;margin-bottom:8px}
+  .ex.cet .ex-legend{padding-top:11px}
+
   body{font-size:16px}
   .slide{padding:34px 44px 66px}
   .slide.pad-tight{padding:28px 36px 62px}
@@ -679,6 +714,24 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
   .qrow{padding:6px 0}
 }
 @media (min-width:901px) and (max-height:820px){
+  .slide.pad-tight#s3 .head{margin-bottom:6px}
+  /* s3 carries two skins plus a status notice; the supplementary caption is
+     dropped in this band so nothing hides behind the nav. Below 720px the
+     zoom tier takes over and it returns. */
+  #s3 .demo-cap{display:none}
+  #s3 .ex-q{min-height:198px}
+  .ex.cet .ex-q{min-height:176px}
+  .ex.cet .ex-legend{padding-top:8px;gap:4px 8px;font-size:10.5px}
+  .ex.cet .ex-legend .chip{width:20px;height:20px;font-size:10px}
+  .skin-tabs{margin-bottom:6px}
+  .skin-tab{padding:5px 11px;font-size:12.5px}
+  .skin-note{padding:6px 10px;font-size:11.5px;line-height:1.45;margin-bottom:7px}
+  .ex-utility{padding:6px 18px}
+  .ex.cet .ex-legend{padding-top:9px;gap:5px 9px}
+  .ex.cet .ex-pal{padding:11px 12px 12px}
+  .ex.cet .chip{width:23px;height:23px;font-size:11px}
+  .ex.cet .ex-palgrid .chip{width:100%;height:25px}
+
   .slide{padding:24px 40px 56px}
   .slide.pad-tight{padding:20px 32px 54px}
   .head{margin-bottom:14px}
@@ -1101,8 +1154,7 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
         <div class="n">01</div>
         <div class="prob-ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="1.6"/><path d="M8.5 21h7M12 17v4M7 8.5h6M7 12h4"/></svg></div>
         <h3>It should match the real exam</h3>
-        <p>The same screen, the same question states, the same rules about saving an answer, the same
-          way sections open and close. Anything else trains students for an exam that does not exist.</p>
+        <p>The same question states, the same rules about saving an answer, the same way sections open and close. Anything else trains students for an exam that does not exist. Each board runs its own interface, so we match them one at a time &mdash; JEE&nbsp;Main and NEET against the board&rsquo;s own mock today, MHT-CET once its mock reopens.</p>
       </div>
       <div class="prob">
         <div class="n">02</div>
@@ -1128,16 +1180,24 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
     <div class="head">
       <span class="label">What the student sees</span>
       <h2>The exam screen</h2>
-      <p>Built to match the official interface — the same layout, the same colours, the same button
-        names, so nothing on the real exam day is unfamiliar.</p>
+      <p>One engine, one set of rules &mdash; a separate skin per exam, because the boards do not share
+        an interface.</p>
     </div>
     <div class="demo">
-      <div class="demo-bar">
-        <div class="tl"><i></i><i></i><i></i></div>
-        <div class="u">MHT-CET Practice Test &#183; Shift 1 &#183; Mathematics</div>
+      <div class="skin-tabs">
+        <button class="skin-tab on" data-skin="nta">JEE&nbsp;Main &amp; NEET
+          <span class="skin-pill ok">Verified</span></button>
+        <button class="skin-tab" data-skin="cet">MHT-CET
+          <span class="skin-pill pend">Validation pending</span></button>
       </div>
-      <div class="demo-body">
-        <div class="ex">
+
+      <div class="ex-skin" data-skin="nta">
+        <div class="demo-bar">
+          <div class="tl"><i></i><i></i><i></i></div>
+          <div class="u">JEE Main Practice Test &#183; Shift 1 &#183; Mathematics</div>
+        </div>
+        <div class="demo-body">
+<div class="ex">
           <div class="ex-top">
             <div class="ex-cand">
               <div class="ex-photo"><svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V21h18v-1.5c0-3-4-5.5-9-5.5z"/></svg></div>
@@ -1203,11 +1263,83 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
             </span>
           </div>
         </div>
+        </div>
+        <p class="demo-cap">
+          <b>Matched against the official interface</b> &mdash; layout, colours and button names taken from the board&rsquo;s own public mock, checked question by question.</p>
       </div>
-      <p class="demo-cap">
-        <b>Question paper view, marked-for-review, section switching, language selection</b> &mdash;
-        all of it works the way the students will find it on the day.
-      </p>
+
+      <div class="ex-skin" data-skin="cet" hidden>
+        <div class="skin-note">
+          <span>&#9888;</span>
+          <span><b>Official validation pending.</b> The CET Cell publishes its mock only for a short
+            window each year and it is closed right now, so these details are our best current reading
+            and are <b>not yet checked against the official mock</b>. They will be replaced once we can
+            verify them.</span>
+        </div>
+        <div class="demo-bar">
+          <div class="tl"><i></i><i></i><i></i></div>
+          <div class="u">MHT-CET Practice Test &#183; Shift 1 &#183; Mathematics</div>
+        </div>
+        <div class="demo-body">
+          <div class="ex cet">
+            <div class="ex-top">
+              <div class="ex-cand">
+                <div class="ex-photo"><svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V21h18v-1.5c0-3-4-5.5-9-5.5z"/></svg></div>
+                <dl>
+                  <dt>Candidate</dt><dd>Sanika Deshmukh</dd>
+                  <dt>Roll No.</dt><dd>R-1042</dd>
+                </dl>
+              </div>
+              <div class="ex-timer">
+                <div class="t-lbl">Remaining time</div>
+                <div class="t-val">01:12:47</div>
+              </div>
+            </div>
+            <div class="ex-utility">
+              <span class="ex-check"><i></i> Mark for Review</span>
+              <span class="ex-zoom">Zoom <span class="z">100%</span></span>
+            </div>
+            <div class="ex-main">
+              <div class="ex-pal">
+                <div class="ex-palgrid">
+                  <span class="chip an">131</span><span class="chip an">132</span><span class="chip na">133</span><span class="chip an">134</span><span class="chip mk">135</span>
+                  <span class="chip an">136</span><span class="chip an">137</span><span class="chip am">138</span><span class="chip na">139</span><span class="chip an">140</span>
+                  <span class="chip an">141</span><span class="chip nv">142</span><span class="chip nv">143</span><span class="chip na">144</span><span class="chip an">145</span>
+                </div>
+                <div class="ex-legend">
+                  <span class="chip an">14</span><span>Answered</span>
+                  <span class="chip na">6</span><span>Not answered</span>
+                  <span class="chip nv">28</span><span>Not visited</span>
+                  <span class="chip mk">2</span><span>Marked for review</span>
+                  <span class="chip am">1</span><span>Answered &amp; marked</span>
+                </div>
+              </div>
+              <div class="ex-q">
+                <div class="ex-qno">Question 135 of 150</div>
+                <div class="ex-stem">
+                  Given that cos<span class="frac"><span class="num">&#945; &minus; &#946;</span><span class="den">2</span></span>
+                  = 2&#8202;cos<span class="frac"><span class="num">&#945; + &#946;</span><span class="den">2</span></span>,
+                  then tan<span class="frac"><span class="num">&#945;</span><span class="den">2</span></span>&#8202;&#183;&#8202;tan<span class="frac"><span class="num">&#946;</span><span class="den">2</span></span>
+                  is equal to
+                </div>
+                <div class="ex-opts">
+                  <div class="ex-opt"><span class="ex-radio"></span> <span class="frac"><span class="num">1</span><span class="den">2</span></span></div>
+                  <div class="ex-opt"><span class="ex-radio"></span> <span class="frac"><span class="num">1</span><span class="den">3</span></span></div>
+                  <div class="ex-opt"><span class="ex-radio on"></span> <span class="frac"><span class="num">1</span><span class="den">4</span></span></div>
+                  <div class="ex-opt"><span class="ex-radio"></span> <span class="frac"><span class="num">1</span><span class="den">8</span></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="ex-actions">
+              <button class="ex-btn ghost">&laquo; Previous</button>
+              <button class="ex-btn save">Next &raquo;</button>
+              <button class="ex-btn ghost">Reset Answer</button>
+            </div>
+          </div>
+        </div>
+        <p class="demo-cap">
+          <b>Provisional.</b> Palette on the left, counts beneath it, no separate save step &mdash; each still to be confirmed against the CET Cell&rsquo;s own mock.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1217,7 +1349,7 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
   <div class="inner">
     <div class="head">
       <span class="label">The details students get caught by</span>
-      <h2>Five question states, exactly as the real exam uses them</h2>
+      <h2>Five question states, matched to the board&rsquo;s own mock test</h2>
     </div>
     <div class="states">
       <div class="state"><span class="chip nv"></span><b>Not visited</b><span>Never opened</span></div>
@@ -1236,7 +1368,7 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
       <div class="card">
         <h3>A clock the computer cannot argue with</h3>
         <p>Time is kept centrally, so changing a machine&rsquo;s clock changes nothing. The paper ends
-          on its own when the time is up, exactly as the real exam does.</p>
+          on its own when the time is up, the way the real exam does.</p>
       </div>
     </div>
   </div>
@@ -1650,7 +1782,7 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
               <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>200 marks, matching the pattern</span></div>
               <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>Every question has an answer</span></div>
               <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>None repeated from this batch&rsquo;s last 3 tests</span></div>
-              <div class="pb-check"><span class="tick" style="background:var(--c-mid)">!</span><span>Hard questions are 21% &mdash; slightly above your usual 18%</span></div>
+              <div class="pb-check"><span class="tick" style="background:var(--c-mid)">!</span><span>Hard questions are 21% &mdash; above the mix you set for this pattern</span></div>
               <button class="pb-go">Generate paper</button>
               <div style="margin-top:10px;font-size:11.5px;color:#767d89;line-height:1.8">
                 You can swap any question before publishing.
@@ -1681,7 +1813,7 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
         <div class="u">New exam &#183; Practice Test 5</div>
       </div>
       <div class="demo-body">
-        <div class="st">
+        <div class="setup">
           <div class="st-top">
             <strong style="font-size:15px">New exam</strong>
             <span style="font-size:13px;color:#767d89">Practice Test 5 &#183; 12th A, B, C</span>
@@ -1766,29 +1898,29 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
             <span class="ic">!</span>
             <div>
               <h4>Four students disconnected at the same moment</h4>
-              <p>PC-19, PC-20, PC-21 and PC-22 stopped together at 11:46. That pattern is the network,
-                not the students. Their answers so far are safe.</p>
+              <p>V. Gaikwad, T. Bhosale, K. More and D. Salunke stopped together at 11:46. That
+                pattern is the network, not the students. Their answers so far are safe.</p>
             </div>
           </div>
           <div class="mon-grid">
-            <div class="seat ok"><div class="pc">PC-01</div><div class="nm">A. Kulkarni</div><div class="st">Q 118 &#183; on track</div></div>
-            <div class="seat ok"><div class="pc">PC-02</div><div class="nm">S. Deshmukh</div><div class="st">Q 104 &#183; on track</div></div>
-            <div class="seat ok"><div class="pc">PC-03</div><div class="nm">R. Pawar</div><div class="st">Q 121 &#183; on track</div></div>
-            <div class="seat slow"><div class="pc">PC-04</div><div class="nm">M. Jadhav</div><div class="st">Q 109 &#183; 14 min</div></div>
-            <div class="seat ok"><div class="pc">PC-05</div><div class="nm">P. Shinde</div><div class="st">Q 133 &#183; on track</div></div>
-            <div class="seat ok"><div class="pc">PC-06</div><div class="nm">N. Patil</div><div class="st">Q 112 &#183; on track</div></div>
-            <div class="seat down"><div class="pc">PC-19</div><div class="nm">V. Gaikwad</div><div class="st">offline 2 min</div></div>
-            <div class="seat down"><div class="pc">PC-20</div><div class="nm">T. Bhosale</div><div class="st">offline 2 min</div></div>
-            <div class="seat down"><div class="pc">PC-21</div><div class="nm">K. More</div><div class="st">offline 2 min</div></div>
-            <div class="seat down"><div class="pc">PC-22</div><div class="nm">D. Salunke</div><div class="st">offline 2 min</div></div>
-            <div class="seat idle"><div class="pc">PC-23</div><div class="nm">&mdash;</div><div class="st">not started</div></div>
-            <div class="seat ok"><div class="pc">PC-24</div><div class="nm">Y. Chavan</div><div class="st">Q 127 &#183; on track</div></div>
+            <div class="seat ok"><div class="nm">A. Kulkarni</div><div class="st">Q 118 &#183; on track</div></div>
+            <div class="seat ok"><div class="nm">S. Deshmukh</div><div class="st">Q 104 &#183; on track</div></div>
+            <div class="seat ok"><div class="nm">R. Pawar</div><div class="st">Q 121 &#183; on track</div></div>
+            <div class="seat slow"><div class="nm">M. Jadhav</div><div class="st">Q 109 &#183; 14 min</div></div>
+            <div class="seat ok"><div class="nm">P. Shinde</div><div class="st">Q 133 &#183; on track</div></div>
+            <div class="seat ok"><div class="nm">N. Patil</div><div class="st">Q 112 &#183; on track</div></div>
+            <div class="seat down"><div class="nm">V. Gaikwad</div><div class="st">offline 2 min</div></div>
+            <div class="seat down"><div class="nm">T. Bhosale</div><div class="st">offline 2 min</div></div>
+            <div class="seat down"><div class="nm">K. More</div><div class="st">offline 2 min</div></div>
+            <div class="seat down"><div class="nm">D. Salunke</div><div class="st">offline 2 min</div></div>
+            <div class="seat idle"><div class="nm">S. Waghmare</div><div class="st">not started</div></div>
+            <div class="seat ok"><div class="nm">Y. Chavan</div><div class="st">Q 127 &#183; on track</div></div>
           </div>
         </div>
       </div>
       <p class="demo-cap">
-        <b>Add time to one student or the whole shift, move a student to a spare machine, see who has
-        submitted</b> &mdash; all from this screen, while the exam runs.
+        <b>Add time to one student or the whole shift, free a student&rsquo;s seat so they can move to
+        a spare machine, see who has submitted</b> &mdash; all from this screen, while the exam runs.
       </p>
     </div>
   </div>
@@ -2115,8 +2247,8 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
     <div class="head">
       <span class="label">Telling parents</span>
       <h2>A result a parent can actually read</h2>
-      <p>One tap sends each student&rsquo;s result as a single card &mdash; readable on any phone, with
-        your college name on it.</p>
+      <p>Each student&rsquo;s result becomes a single card &mdash; readable on any phone, with your
+        college name on it, ready to share.</p>
     </div>
     <div class="share-split">
       <div class="phone">
@@ -2142,9 +2274,9 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
       </div>
       <div>
         <div class="card" style="margin-bottom:14px">
-          <h3>Sent to the whole batch at once</h3>
-          <p>Each parent gets only their own child&rsquo;s card. No list of other students, no marks
-            anyone else can see.</p>
+          <h3>One card per student</h3>
+          <p>Download the whole batch in one go and share them the way you already do. Each card holds
+            only that child&rsquo;s result &mdash; no list of other students, no marks anyone else can see.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <h3>Your college name, not ours</h3>
@@ -2171,7 +2303,7 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
       write, and built so the hard parts of exam day are handled quietly in the background.
     </p>
     <div class="summary">
-      <div class="sum"><b>Familiar</b><span>The same screen, states and rules students will meet in the real exam.</span></div>
+      <div class="sum"><b>Familiar</b><span>The same states and rules students will meet in the real exam, on a screen matched per board.</span></div>
       <div class="sum"><b>Quick to set up</b><span>A whole paper ready in about half an hour, with nothing retyped.</span></div>
       <div class="sum"><b>Steady on the day</b><span>Answers safe through dropped connections, dead machines and power cuts.</span></div>
     </div>
@@ -2193,6 +2325,21 @@ figure{margin:0}   /* the UA default 40px side margin was pinching every figure 
 </nav>
 
 <script>
+  // exam-skin switcher (slide 3)
+  (function(){
+    var tabs = document.querySelectorAll('.skin-tab');
+    if(!tabs.length) return;
+    Array.prototype.forEach.call(tabs, function(t){
+      t.addEventListener('click', function(){
+        var want = t.getAttribute('data-skin');
+        Array.prototype.forEach.call(tabs, function(x){ x.classList.toggle('on', x === t); });
+        Array.prototype.forEach.call(document.querySelectorAll('.ex-skin'), function(pane){
+          pane.hidden = pane.getAttribute('data-skin') !== want;
+        });
+      });
+    });
+  })();
+
 (function(){
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var dots   = document.getElementById('dots');
