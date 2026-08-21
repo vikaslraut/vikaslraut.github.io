@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f0f1f3">
+<meta name="color-scheme" content="light">
 <title>Flyer — practice exams that behave like the real one</title>
 <meta name="description" content="A computer-based test system for CET, JEE and NEET practice. Your question papers, the real exam interface, and an exam day that does not lose answers.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,17 +12,28 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
 <style>
 :root{
-  --ground:#eef1f4;
+  --ground:#f0f1f3;
   --surface:#ffffff;
-  --surface-2:#f7f8fa;
-  --ink:#14171c;
-  --ink-2:#39404b;
-  --muted:#626a78;
-  --faint:#9aa2b0;
-  --rule:#d7dbe2;
-  --rule-soft:#e7eaef;
+  --surface-2:#f7f8f9;
+  --ink:#1a1d22;
+  --ink-2:#3f4650;
+  --muted:#6a717c;
+  --faint:#9ba2ac;
+  --rule:#dcdfe4;
+  --rule-soft:#eaecef;
 
-  /* the real exam interface palette — used for meaning, never decoration */
+  /* page chrome accent — deliberately quiet, so the exam screen stands out as itself */
+  --accent:#6b7f96;
+  --accent-deep:#4e6379;
+
+  /* muted data colours for charts and bars outside the exam interface */
+  --c-good:#78a17d;
+  --c-mid:#c2a468;
+  --c-low:#b47f6e;
+
+  /* The real exam interface palette. Used ONLY inside the exam player and the
+     five-state legend — these are the actual NTA colours and must not be softened.
+     Everything else on the page uses --accent and the muted --c-* data colours. */
   --st-notvisited:#e6e6e6;
   --st-notanswered:#e24401;
   --st-answered:#2dba00;
@@ -43,29 +56,30 @@ h2{font-size:clamp(27px,3.6vw,42px);line-height:1.13;letter-spacing:-.012em}
 h3{font-size:19px;line-height:1.32}
 p{margin:0 0 16px}
 .label{font-family:"Roboto Mono",monospace;font-size:11px;letter-spacing:.14em;
-       text-transform:uppercase;color:var(--st-notanswered)}
+       text-transform:uppercase;color:var(--accent-deep)}
 .lede{font-size:clamp(17px,1.6vw,20px);line-height:1.58;color:var(--ink-2)}
 .muted{color:var(--muted)}
 
 /* ============================ deck ============================ */
 .deck{position:relative;height:100vh;height:100dvh;width:100%;overflow:hidden}
 .slide{
-  position:absolute;inset:0;display:flex;align-items:center;
+  position:absolute;inset:0;display:flex;align-items:flex-start;
   padding:64px 56px 88px;opacity:0;visibility:hidden;
   transform:translateY(14px);transition:opacity .38s ease,transform .38s ease,visibility .38s;
-  overflow:hidden;
+  overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;scrollbar-width:thin;
 }
 .slide.on{opacity:1;visibility:visible;transform:none}
-.inner{width:100%;max-width:1120px;margin:0 auto;position:relative}
-.fit-content{width:100%}
-.slide.pad-tight{padding:44px 40px 84px}
+.inner{width:100%;max-width:1120px;margin:auto}
+.slide.pad-tight{padding:40px 40px 74px}
+.slide.pad-tight .head{margin-bottom:16px}
 
 @media(prefers-reduced-motion:reduce){
   .slide{transition:opacity .01s;transform:none}
 }
 
 /* head block used on most slides */
-.head{margin-bottom:26px;max-width:920px}
+.head{margin-bottom:26px;max-width:760px}
 .head .label{display:block;margin-bottom:11px}
 .head p{margin:12px 0 0;color:var(--muted);font-size:16.5px;max-width:66ch}
 
@@ -80,7 +94,7 @@ p{margin:0 0 16px}
   width:8px;height:8px;padding:0;border:none;border-radius:50%;
   background:#c3cad4;cursor:pointer;transition:background .2s,transform .2s;
 }
-.dots button.on{background:var(--st-notanswered);transform:scale(1.35)}
+.dots button.on{background:var(--accent-deep);transform:scale(1.35)}
 .dots button:hover{background:var(--muted)}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:14px}
 .count{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--muted);
@@ -118,13 +132,13 @@ p{margin:0 0 16px}
 .probs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);
        border:1px solid var(--rule);border-radius:4px;overflow:hidden}
 .prob{background:var(--surface);padding:30px 28px}
-.prob .n{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--st-notanswered);
+.prob .n{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--accent);
          letter-spacing:.1em;margin-bottom:14px}
 .prob h3{margin-bottom:10px}
 .prob p{font-size:15.5px;color:var(--muted);margin:0}
 
 /* ============================ app chrome ============================ */
-.demo-bar{display:flex;align-items:center;gap:10px;padding:9px 14px;
+.demo-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;
           background:#2b3039;border-radius:6px 6px 0 0}
 .demo-bar .tl{display:flex;gap:6px}
 .demo-bar .tl i{width:10px;height:10px;border-radius:50%;background:#555d6a;display:block}
@@ -132,26 +146,8 @@ p{margin:0 0 16px}
   font-family:"Roboto Mono",monospace;font-size:11px;color:#8d96a4;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .demo-body{background:#fff;border:1px solid var(--rule);border-top:none;
-           border-radius:0 0 6px 6px;overflow-x:auto;position:relative}
-.demo-body::after{
-  content:"";position:absolute;top:0;right:0;bottom:0;width:40px;
-  background:linear-gradient(to right,transparent,rgba(255,255,255,.92) 70%);
-  pointer-events:none;opacity:0;transition:opacity .25s ease;border-radius:0 0 6px 0;
-}
-.demo-body.is-scrollable::after{opacity:1}
-.demo-body.at-end::after{opacity:0}
-.demo-scroll-hint{
-  position:absolute;right:10px;bottom:10px;z-index:2;display:flex;align-items:center;gap:4px;
-  background:rgba(20,23,28,.82);color:#fff;font-family:"Roboto Mono",monospace;
-  font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px 5px 10px;
-  border-radius:99px;pointer-events:none;opacity:0;transition:opacity .25s ease;white-space:nowrap;
-}
-.demo-scroll-hint svg{width:11px;height:11px;flex:none;animation:hint-nudge 1.4s ease-in-out infinite}
-.demo-body.is-scrollable .demo-scroll-hint{opacity:1}
-.demo-body.at-end .demo-scroll-hint{opacity:0}
-@keyframes hint-nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
-@media(prefers-reduced-motion:reduce){.demo-scroll-hint svg{animation:none}}
-.demo-cap{margin-top:13px;font-size:15px;color:var(--muted);max-width:78ch}
+           border-radius:0 0 6px 6px;overflow-x:auto}
+.demo-cap{margin-top:10px;font-size:14.5px;line-height:1.5;color:var(--muted);max-width:78ch}
 .demo-cap b{color:var(--ink);font-weight:600}
 
 /* ============================ exam player ============================ */
@@ -177,7 +173,7 @@ p{margin:0 0 16px}
 .ex-sec.locked{color:#a8aeb8}
 .ex-sec.locked::after{content:" · closed";font-size:11px}
 .ex-main{display:grid;grid-template-columns:1fr 288px}
-.ex-q{padding:20px 22px;border-right:1px solid #e3e6ea;min-height:326px}
+.ex-q{padding:18px 22px;border-right:1px solid #e3e6ea;min-height:300px}
 .ex-qno{font-weight:600;margin-bottom:14px;font-size:15px}
 .ex-stem{font-family:"Source Serif 4",Georgia,serif;font-size:16.5px;line-height:2.05;
          color:#111;margin-bottom:20px}
@@ -223,9 +219,291 @@ p{margin:0 0 16px}
 .state span{font-size:13px;color:var(--muted);line-height:1.45;display:block}
 .two-up{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .card{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:24px 26px}
-.card.accent{border-left:3px solid var(--st-notanswered)}
+.card.accent{border-left:3px solid var(--accent)}
+#sVerify .card{padding:16px 18px}
+#sVerify .card p{font-size:14.5px}
 .card h3{margin-bottom:9px}
 .card p{margin:0;font-size:15.5px;color:var(--muted)}
+
+/* ---- problem card icons ---- */
+.prob-ic{width:34px;height:34px;border-radius:4px;background:var(--surface-2);
+  border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;
+  margin-bottom:15px}
+.prob-ic svg{width:18px;height:18px;stroke:var(--ink-2);fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- paper page with crop boxes ---- */
+.paper-split{display:grid;grid-template-columns:376px 1fr;gap:32px;align-items:start}
+.paper-shot{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:16px}
+.paper-shot figcaption{font-size:13px;color:var(--muted);margin-top:11px;text-align:center}
+.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--surface);
+  border:1px solid var(--rule);border-radius:4px;padding:15px 18px}
+.step .sn{font-family:"Roboto Mono",monospace;font-size:11px;color:var(--accent-deep);
+  border:1px solid var(--rule);border-radius:3px;padding:2px 7px;flex:none;margin-top:2px}
+.step b{display:block;font-size:15.5px;margin-bottom:2px}
+.step span{font-size:14px;color:var(--muted)}
+@media(max-width:900px){.paper-split{grid-template-columns:1fr}}
+
+/* ---- teacher batch view ---- */
+.tb{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+.tb-top{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #e3e6ea}
+.tb-body{display:grid;grid-template-columns:1fr 320px}
+.tb-left{padding:18px 20px;border-right:1px solid #e3e6ea}
+.tb-right{padding:18px 18px}
+.qrow{display:grid;grid-template-columns:74px 1fr 88px;gap:14px;align-items:center;
+  padding:7px 0;border-bottom:1px solid #f0f2f5;font-size:13px}
+.qrow:last-child{border-bottom:none}
+.qrow .qid{font-family:"Roboto Mono",monospace;font-size:12px;color:#5a626e}
+.qrow .qch{font-size:11px;color:#949cab;white-space:nowrap}
+.qrow .qbar{height:8px;background:#eef0f3;border-radius:4px;overflow:hidden}
+.qrow .qbar i{display:block;height:100%;border-radius:4px;background:var(--c-low)}
+.qrow .qpct{font-family:"Roboto Mono",monospace;font-size:12px;color:#5a626e;text-align:right}
+.heat{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
+.heat i{height:26px;border-radius:2px;display:block}
+.heat-key{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:#949cab}
+.heat-key .g{display:flex;gap:3px}
+.heat-key .g i{width:14px;height:10px;border-radius:2px;display:block}
+
+
+/* ============================ question bank ============================ */
+.bk{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+.bk-top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid #e3e6ea}
+.bk-search{border:1px solid #d5d9e0;border-radius:3px;padding:6px 12px;font-size:13px;
+  color:#a4abb6;min-width:210px;background:#fff}
+.bk-body{display:grid;grid-template-columns:186px 1fr}
+.bk-side{border-right:1px solid #e3e6ea;padding:14px 14px;background:#fbfcfd}
+.bk-grp{margin-bottom:16px}
+.bk-grp p{margin:0 0 7px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:#949cab;font-weight:600}
+.bk-opt{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#4a5260;padding:3px 0}
+.bk-box{width:13px;height:13px;border:1.4px solid #c3cad4;border-radius:2.5px;flex:none;background:#fff}
+.bk-box.on{background:var(--navy);border-color:var(--navy);position:relative}
+.bk-box.on::after{content:"";position:absolute;left:4px;top:1px;width:3.5px;height:7px;
+  border:solid #fff;border-width:0 1.8px 1.8px 0;transform:rotate(45deg)}
+.bk-opt .ct{margin-left:auto;font-family:"Roboto Mono",monospace;font-size:11px;color:#a4abb6}
+.bk-list{padding:6px 0}
+.bk-q{display:grid;grid-template-columns:1fr 118px 74px 60px;gap:14px;align-items:center;
+  padding:11px 18px;border-bottom:1px solid #f0f2f5;font-size:13.5px}
+.bk-q:last-child{border-bottom:none}
+.bk-q .txt{font-family:"Source Serif 4",Georgia,serif;font-size:14.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-q .ch{font-size:12px;color:#767d89}
+.dchip{display:inline-block;padding:1px 8px;font-size:11px;border-radius:99px;border:1px solid}
+.dchip.e{color:#5e7f62;border-color:#c9dac8;background:#f4f7f4}
+.dchip.m{color:#87703f;border-color:#e3d5b6;background:#faf7f0}
+.dchip.h{color:#8f5b4b;border-color:#e2c7bd;background:#faf3f1}
+.bk-q .used{font-family:"Roboto Mono",monospace;font-size:11.5px;color:#949cab;text-align:right}
+
+/* ============================ paper builder ============================ */
+.pb{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+.pb-top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid #e3e6ea}
+.pb-body{display:grid;grid-template-columns:1fr 286px}
+.pb-left{padding:16px 18px;border-right:1px solid #e3e6ea}
+.pb-right{padding:16px 16px;background:#fbfcfd}
+.pb-pattern{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.pb-pill{border:1px solid #d5d9e0;border-radius:99px;padding:5px 14px;font-size:12.5px;
+  color:#5a626e;background:#fff}
+.pb-pill.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:500}
+.pb-sub{font-size:12px;font-weight:600;color:#5a626e;text-transform:uppercase;letter-spacing:.05em;
+  margin:14px 0 8px}
+.pb-row{display:grid;grid-template-columns:1fr 58px 116px;gap:12px;align-items:center;
+  padding:5px 0;font-size:13.5px;border-bottom:1px solid #f4f6f8}
+.pb-row:last-child{border-bottom:none}
+.pb-num{border:1px solid #d5d9e0;border-radius:3px;padding:4px 8px;text-align:center;
+  font-family:"Roboto Mono",monospace;font-size:13px;background:#fff}
+.pb-mix{display:flex;gap:3px;align-items:center}
+.pb-mix i{height:7px;border-radius:4px;display:block}
+.pb-check{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;padding:7px 0;
+  border-bottom:1px solid #eef0f3;color:#4a5260}
+.pb-check:last-child{border-bottom:none}
+.pb-check .tick{width:15px;height:15px;border-radius:50%;flex:none;display:flex;
+  align-items:center;justify-content:center;font-size:9px;color:#fff;margin-top:1px}
+.pb-go{width:100%;background:var(--accent-deep);color:#fff;border:none;border-radius:3px;
+  padding:10px;font-size:14px;font-weight:600;font-family:inherit;margin-top:12px}
+
+/* ============================ merit list ============================ */
+.ml{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+.ml-top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid #e3e6ea}
+.ml-act{margin-left:auto;display:flex;gap:7px}
+.ml-btn{border:1px solid #d5d9e0;background:#fff;border-radius:3px;padding:5px 12px;
+  font-size:12.5px;color:#3d434f;font-family:inherit}
+.ml-tabs{display:flex;gap:2px;padding:0 18px;background:#f2f4f6;border-bottom:1px solid #e3e6ea}
+.ml-tab{padding:9px 16px;font-size:13px;color:#5a626e;border-bottom:2px solid transparent}
+.ml-tab.on{background:#fff;color:var(--navy);font-weight:600;border-bottom-color:var(--navy)}
+.ml-body{display:grid;grid-template-columns:1fr 268px}
+.ml-left{padding:0 0 8px;border-right:1px solid #e3e6ea}
+.ml-hd,.ml-r{display:grid;grid-template-columns:56px 1fr 92px 78px 74px;gap:12px;
+  align-items:center;padding:8px 18px;font-size:13.5px}
+.ml-hd{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#949cab;
+  border-bottom:1px solid #e3e6ea;font-weight:600}
+.ml-r{border-bottom:1px solid #f4f6f8}
+.ml-r:last-child{border-bottom:none}
+.ml-r .rk{font-family:"Roboto Mono",monospace;font-weight:600;color:#5a626e}
+.ml-r.top .rk{color:#fff;background:var(--navy);border-radius:3px;width:26px;height:24px;
+  display:flex;align-items:center;justify-content:center;font-size:12.5px}
+.ml-r .roll{font-family:"Roboto Mono",monospace;font-size:12px;color:#949cab}
+.ml-r .mk{font-family:"Roboto Mono",monospace;font-weight:600;color:var(--navy);text-align:right}
+.ml-r .pc2{font-family:"Roboto Mono",monospace;font-size:12.5px;color:#5a626e;text-align:right}
+.ml-right{padding:16px}
+.topper{display:flex;gap:11px;align-items:center;border:1px solid #e3e6ea;border-radius:4px;
+  padding:11px 12px;margin-bottom:8px}
+.topper .sub{font-size:10.5px;color:#949cab;text-transform:uppercase;letter-spacing:.06em}
+.topper .nm2{font-size:13.5px;font-weight:600}
+.topper .sc{margin-left:auto;font-family:"Roboto Mono",monospace;font-weight:600;
+  color:var(--navy);font-size:15px}
+
+/* ============================ progress ============================ */
+.pg{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+.pg-top{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid #e3e6ea}
+.pg-body{display:grid;grid-template-columns:1fr 262px}
+.pg-left{padding:16px 18px;border-right:1px solid #e3e6ea}
+.pg-right{padding:16px}
+.trend{display:flex;align-items:center;gap:9px;border:1px solid #e3e6ea;border-radius:4px;
+  padding:11px 12px;margin-bottom:8px;font-size:13px}
+.trend .ar{font-family:"Roboto Mono",monospace;font-size:15px;font-weight:600}
+.trend .lb{flex:1}
+.trend .dt{font-family:"Roboto Mono",monospace;font-size:12.5px;color:#5a626e}
+
+/* ============================ share card ============================ */
+.share-split{display:grid;grid-template-columns:326px 1fr;gap:32px;align-items:start}
+@media(max-width:900px){.share-split{grid-template-columns:1fr}}
+.phone{background:#111418;border-radius:22px;padding:11px;box-shadow:0 6px 26px rgba(20,23,28,.16)}
+.phone-in{background:#e6ded4;border-radius:14px;padding:16px 12px;min-height:380px}
+.wa-day{text-align:center;font-size:10.5px;color:#7b7266;background:#f2ece4;border-radius:6px;
+  padding:3px 10px;display:inline-block;margin:0 auto 12px;width:100%}
+.wa-msg{background:#fff;border-radius:8px 8px 8px 2px;padding:0;overflow:hidden;
+  box-shadow:0 1px 1px rgba(0,0,0,.1);max-width:250px}
+.rescard{padding:14px}
+.rescard .sch{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#949cab;
+  padding-bottom:8px;border-bottom:1px solid #eef0f3;margin-bottom:10px}
+.rescard .nm3{font-size:15px;font-weight:600;font-family:"Source Serif 4",serif}
+.rescard .ex2{font-size:11.5px;color:#767d89;margin-bottom:11px}
+.rescard .big{display:flex;align-items:baseline;gap:8px;margin-bottom:11px}
+.rescard .big b{font-family:"Roboto Mono",monospace;font-size:29px;color:var(--navy);font-weight:600}
+.rescard .big span{font-size:12px;color:#949cab}
+.rescard .rk2{background:#f3f6f3;border:1px solid #c9dac8;border-radius:4px;padding:6px 10px;
+  font-size:12px;color:#5e7f62;margin-bottom:11px}
+.sline{display:grid;grid-template-columns:64px 1fr 34px;gap:8px;align-items:center;
+  font-size:11.5px;margin-bottom:5px}
+.sline .sb{height:6px;background:#eef0f3;border-radius:3px;overflow:hidden}
+.sline .sb i{display:block;height:100%;border-radius:3px}
+.sline .sv{font-family:"Roboto Mono",monospace;font-size:11px;color:#5a626e;text-align:right}
+.wa-time{font-size:9.5px;color:#98a0aa;text-align:right;padding:0 9px 6px}
+
+
+/* ============================ verification + roles ============================ */
+.vflow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch;
+  margin-bottom:14px}
+.vstep{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:11px 14px}
+.vstep .who{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--accent-deep);margin-bottom:7px}
+.vstep b{display:block;font-size:14.5px;margin-bottom:2px}
+.vstep span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.varr{display:flex;align-items:center;color:#b8c0cb;font-size:17px}
+.vstep.mid{border-color:#c9d6e6;background:#f8fafc}
+.vways{display:flex;gap:6px;margin-top:7px}
+.vway{flex:1;border:1px solid var(--rule);border-radius:3px;padding:5px 7px;background:#fff;
+  font-size:11px;color:var(--ink-2);text-align:center}
+.vway b{display:block;font-size:11.5px;margin:0 0 1px}
+@media(max-width:900px){.vflow{grid-template-columns:1fr}.varr{transform:rotate(90deg);justify-content:center}}
+
+.proof-split{display:grid;grid-template-columns:1fr 316px;gap:24px;align-items:start}
+@media(max-width:900px){.proof-split{grid-template-columns:1fr}.roles{grid-template-columns:1fr}}
+.sheet{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:16px 18px;
+  box-shadow:0 2px 10px rgba(20,23,28,.05)}
+.sheet-hd{display:flex;align-items:baseline;gap:12px;padding-bottom:10px;
+  border-bottom:1.5px solid var(--ink);margin-bottom:14px}
+.sheet-hd b{font-family:"Source Serif 4",serif;font-size:14.5px}
+.sheet-hd span{font-size:11.5px;color:var(--muted);margin-left:auto;
+  font-family:"Roboto Mono",monospace}
+.sq{display:grid;grid-template-columns:1fr 128px;gap:14px;padding:9px 0;
+  border-bottom:1px dashed var(--rule-soft)}
+.sq:last-child{border-bottom:none}
+.sq .body{font-family:"Source Serif 4",Georgia,serif;font-size:13.5px;line-height:1.7}
+.sq .body .qn2{font-family:"Public Sans",sans-serif;font-weight:600;font-size:13px}
+.sq .opts2{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;margin-top:5px;font-size:13px}
+.sq .opts2 u{text-decoration:none;font-weight:600}
+.sq .chk{border-left:1px solid var(--rule-soft);padding-left:14px;font-size:11px;color:var(--muted)}
+.sq .chk .row2{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.sq .chk .bx{width:13px;height:13px;border:1.3px solid #9aa1ac;border-radius:2px;flex:none}
+.sq .chk .bx.t{background:var(--c-good);border-color:var(--c-good);position:relative}
+.sq .chk .bx.t::after{content:"";position:absolute;left:4px;top:1px;width:3.5px;height:7px;
+  border:solid #fff;border-width:0 1.7px 1.7px 0;transform:rotate(45deg)}
+.sq .chk .line2{border-bottom:1px solid var(--rule);height:13px;margin-top:3px}
+.sheet-ft{display:flex;gap:20px;margin-top:11px;padding-top:9px;border-top:1px solid var(--rule-soft);
+  font-size:11.5px;color:var(--muted)}
+.sheet-ft .sig{flex:1}
+.sheet-ft .sig i{display:block;border-bottom:1px solid var(--rule);height:16px;margin-bottom:3px}
+
+.roles{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+.role{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:9px 13px}
+.role b{display:block;font-size:13.5px;margin-bottom:1px}
+.role span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.role .no2{display:block;font-size:11.5px;color:var(--faint);margin-top:2px}
+
+
+/* ============================ exam setup ============================ */
+.st{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
+.st-top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid #e3e6ea}
+.st-tpl{display:flex;gap:6px;align-items:center;padding:9px 18px;border-bottom:1px solid #e3e6ea;
+  background:#fbfcfd;flex-wrap:wrap}
+.st-tpl .lb2{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#949cab;
+  font-weight:600;margin-right:4px}
+.st-new{border:1px dashed #c3cad4;color:#767d89}
+.st-body{display:grid;grid-template-columns:1fr 316px}
+.st-left{padding:13px 18px;border-right:1px solid #e3e6ea}
+.st-right{padding:13px 16px}
+.st-meta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;margin-bottom:12px}
+.st-meta dt{color:#767d89}
+.st-meta dd{margin:0;font-weight:500}
+.shift{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+  border:1px solid #e3e6ea;border-radius:4px;padding:7px 11px;margin-bottom:6px}
+.shift .sh1{font-size:13.5px;font-weight:600}
+.shift .sh2{font-size:11.5px;color:#767d89}
+.code{display:flex;gap:4px}
+.code i{width:21px;height:24px;border:1px solid #d5d9e0;border-radius:3px;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-family:"Roboto Mono",monospace;
+  font-size:13px;font-weight:500;color:var(--navy);font-style:normal}
+.code-lb{font-size:10px;color:#949cab;text-align:right;margin-bottom:3px;
+  letter-spacing:.06em;text-transform:uppercase}
+.tog{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid #f0f2f5;
+  font-size:12.5px}
+.tog:last-of-type{border-bottom:none}
+.tog .sw2{width:30px;height:17px;border-radius:99px;flex:none;position:relative;background:#d5d9e0}
+.tog .sw2.on{background:var(--c-good)}
+.tog .sw2::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;
+  border-radius:50%;background:#fff}
+.tog .sw2.on::after{left:auto;right:2px}
+.tog .val2{margin-left:auto;font-size:12px;color:#767d89;font-family:"Roboto Mono",monospace}
+.login-box{border:1px solid #e3e6ea;border-radius:4px;padding:9px 12px;margin-top:9px;
+  background:#fbfcfd}
+.login-box .h5{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#949cab;
+  font-weight:600;margin-bottom:9px}
+.lf{margin-bottom:6px}
+.lf label{display:block;font-size:11px;color:#767d89;margin-bottom:3px}
+.lf .box2{border:1px solid #d5d9e0;border-radius:3px;padding:6px 10px;font-size:13px;background:#fff;
+  color:#3d434f;display:flex;align-items:center;justify-content:space-between}
+.lf .box2 em{font-style:normal;font-size:11px;color:#a4abb6}
+
+
+/* ---- exam comparison strip ---- */
+.cmp{border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--surface);
+  margin-top:16px}
+.cmp-h,.cmp-r{display:grid;grid-template-columns:132px 190px 218px 1fr;gap:16px;
+  padding:9px 16px;align-items:baseline}
+.cmp-h{font-family:"Roboto Mono",monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);background:var(--surface-2);
+  border-bottom:1px solid var(--rule)}
+.cmp-r{border-bottom:1px solid var(--rule-soft);font-size:13.5px;color:var(--muted)}
+.cmp-r:last-child{border-bottom:none}
+.cmp-r b{color:var(--ink);font-weight:600;font-size:14px}
+.cmp-r.own{background:var(--surface-2)}
+.cmp-r.own b{color:var(--accent-deep)}
+@media(max-width:900px){
+  .cmp-h{display:none}
+  .cmp-r{grid-template-columns:1fr;gap:2px;padding:11px 14px}
+}
 
 /* ============================ figure ============================ */
 .fig{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:30px}
@@ -237,12 +515,12 @@ p{margin:0 0 16px}
 .im-file{font-weight:600}
 .im-prog{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:#5a626e}
 .im-bar{width:140px;height:6px;background:#e9ecf0;border-radius:3px;overflow:hidden}
-.im-bar i{display:block;height:100%;width:70%;background:var(--st-answered)}
+.im-bar i{display:block;height:100%;width:70%;background:var(--c-good)}
 .im-main{display:grid;grid-template-columns:1fr 292px}
 .im-stage{padding:18px 20px;border-right:1px solid #e3e6ea;background:#f7f8fa}
-.im-crop{background:#fff;border:2px solid var(--btn-review);position:relative;padding:18px 20px;
+.im-crop{background:#fff;border:2px solid var(--accent);position:relative;padding:18px 20px;
   font-family:"Source Serif 4",Georgia,serif;font-size:15.5px;line-height:1.9}
-.im-h{position:absolute;width:9px;height:9px;background:var(--btn-review)}
+.im-h{position:absolute;width:9px;height:9px;background:var(--accent)}
 .im-h.tl{left:-5px;top:-5px}.im-h.tr{right:-5px;top:-5px}
 .im-h.bl{left:-5px;bottom:-5px}.im-h.br{right:-5px;bottom:-5px}
 .im-crop .qn{font-family:"Public Sans",sans-serif;font-weight:600;font-size:14px;color:#3d434f}
@@ -253,10 +531,10 @@ p{margin:0 0 16px}
 .im-field label{display:block;font-size:11.5px;color:#767d89;margin-bottom:5px}
 .im-val{border:1px solid #d5d9e0;border-radius:3px;padding:7px 11px;font-size:14px;
         display:flex;align-items:center;justify-content:space-between;background:#fff}
-.im-val.auto{background:#f3fbf1;border-color:#b5e0aa}
-.im-val em{font-style:normal;font-size:12px;color:#5f9d4e}
+.im-val.auto{background:#f3f7f3;border-color:#c9dac8}
+.im-val em{font-style:normal;font-size:12px;color:#5e7f62}
 .im-src{font-family:"Roboto Mono",monospace;font-size:10px;color:#5f9d4e;margin-top:4px}
-.im-approve{width:100%;background:var(--btn-save);color:#fff;border:none;border-radius:3px;
+.im-approve{width:100%;background:var(--accent-deep);color:#fff;border:none;border-radius:3px;
   padding:10px;font-size:14px;font-weight:600;font-family:inherit;margin-top:2px}
 .im-keys{margin-top:11px;font-size:11.5px;color:#767d89;line-height:1.95}
 kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;border:1px solid #d5d9e0;
@@ -264,8 +542,8 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
 .im-thumbs{display:flex;gap:6px;margin-top:14px;overflow-x:auto;padding-bottom:3px}
 .im-th{width:32px;height:40px;border:1px solid #d5d9e0;border-radius:2px;flex:none;
   display:flex;align-items:center;justify-content:center;font-size:9px;color:#949cab;background:#fff}
-.im-th.done{background:#f3fbf1;border-color:#b5e0aa;color:#5f9d4e}
-.im-th.now{border-color:var(--btn-review);border-width:2px;color:var(--btn-review);font-weight:600}
+.im-th.done{background:#f2f6f2;border-color:#c6d8c5;color:#5e7f62}
+.im-th.now{border-color:var(--accent);border-width:2px;color:var(--accent-deep);font-weight:600}
 
 /* ============================ monitor ============================ */
 .mon{min-width:840px;font-family:system-ui,sans-serif;font-size:14px;background:#fff}
@@ -273,21 +551,21 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
 .mon-stats{margin-left:auto;display:flex;gap:22px;font-size:12.5px;text-align:center}
 .mon-stats b{display:block;font-size:19px;font-weight:600;font-family:"Roboto Mono",monospace}
 .mon-alert{display:flex;gap:12px;align-items:flex-start;padding:12px 18px;
-           background:#fdf0ea;border-bottom:1px solid #f5cdba}
-.mon-alert .ic{width:22px;height:22px;border-radius:50%;background:var(--st-notanswered);
+           background:#f9f1ee;border-bottom:1px solid #e8cfc5}
+.mon-alert .ic{width:22px;height:22px;border-radius:50%;background:var(--c-low);
   color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;
   font-size:13px;flex:none;margin-top:1px}
 .mon-alert h4{margin:0 0 3px;font-size:14px;font-weight:600;font-family:"Public Sans",sans-serif}
-.mon-alert p{margin:0;font-size:13px;color:#7a4a35}
+.mon-alert p{margin:0;font-size:13px;color:#7d5749}
 .mon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;padding:16px}
 .seat{border:1px solid #e3e6ea;border-radius:3px;padding:8px 10px;background:#fff}
 .seat .pc{font-family:"Roboto Mono",monospace;font-size:10px;color:#949cab}
 .seat .nm{font-size:12.5px;font-weight:500;margin:2px 0 5px;white-space:nowrap;
           overflow:hidden;text-overflow:ellipsis}
 .seat .st{font-size:10.5px;color:#5a626e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seat.ok{border-left:3px solid var(--st-answered)}
-.seat.slow{border-left:3px solid var(--btn-mark);background:#fffbf3}
-.seat.down{border-left:3px solid var(--st-notanswered);background:#fdf3f0}
+.seat.ok{border-left:3px solid var(--c-good)}
+.seat.slow{border-left:3px solid var(--c-mid);background:#fbf8f2}
+.seat.down{border-left:3px solid var(--c-low);background:#faf2f0}
 .seat.idle{border-left:3px solid #d5d9e0;background:#fafbfc;color:#949cab}
 
 /* ============================ results ============================ */
@@ -296,7 +574,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
 .rs-top .who{font-weight:600;font-size:15px}
 .rs-body{display:grid;grid-template-columns:1fr 300px}
 .rs-left{padding:18px 20px;border-right:1px solid #e3e6ea}
-.rs-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.rs-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .tile{border:1px solid #e3e6ea;border-radius:4px;padding:13px 14px;background:#fafbfc}
 .tile .k{font-size:11px;color:#767d89;margin-bottom:4px}
 .tile .v{font-family:"Roboto Mono",monospace;font-size:23px;font-weight:500;color:var(--navy)}
@@ -304,12 +582,13 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
 .rs-h{font-size:12px;color:#767d89;margin:0 0 9px;font-weight:600;text-transform:uppercase;
       letter-spacing:.06em}
 .bar-row{display:grid;grid-template-columns:150px 1fr 40px;gap:11px;align-items:center;
-         margin-bottom:8px;font-size:13px}
+         margin-bottom:6px;font-size:13px}
+.tb-right .bar-row span:first-child{white-space:nowrap;font-size:12.5px}
 .bar{height:9px;background:#eef0f3;border-radius:5px;overflow:hidden}
 .bar i{display:block;height:100%;border-radius:5px}
 .bar-row .pct{font-family:"Roboto Mono",monospace;font-size:12px;color:#5a626e;text-align:right}
 .rs-right{padding:18px 18px}
-.insight{border:1px solid #e3e6ea;border-radius:4px;padding:12px 13px;margin-bottom:9px}
+.insight{border:1px solid #e3e6ea;border-radius:4px;padding:10px 12px;margin-bottom:7px}
 .insight .t{font-size:12.5px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:7px}
 .insight .d{font-size:12px;color:#767d89;line-height:1.5}
 .sw{width:9px;height:9px;border-radius:2px;flex:none}
@@ -342,10 +621,451 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
   .state{display:flex;align-items:center;gap:14px;text-align:left;padding:14px 16px}
   .state .chip{margin:0}
 }
-:focus-visible{outline:2px solid var(--btn-review);outline-offset:3px}
+
+/* ============================================================
+   Short viewports — laptops and projectors. Tighten spacing and
+   type rather than cutting content, so the same deck fits a
+   1366x768 projector and a large monitor alike.
+   ============================================================ */
+@media (min-width:901px) and (max-height:900px){
+  body{font-size:16px}
+  .slide{padding:34px 44px 66px}
+  .slide.pad-tight{padding:28px 36px 62px}
+  .slide.pad-tight .head{margin-bottom:12px}
+  .head{margin-bottom:20px}
+  h1{font-size:clamp(30px,4.4vw,46px)}
+  h2{font-size:clamp(23px,2.9vw,32px)}
+  .head p{font-size:15.5px;margin-top:9px}
+  .lede{font-size:17px}
+  .demo-cap{margin-top:8px;font-size:14px}
+  .demo-bar{padding:7px 13px}
+  .nav{height:52px;padding:0 28px}
+  .prob{padding:22px 22px}
+  .prob .prob-ic{margin-bottom:11px}
+  .card{padding:18px 20px}
+  .fig{padding:22px}
+  .state{padding:15px 13px}
+  .state .chip{margin-bottom:9px}
+  .rel-item{padding:17px 19px}
+  .step{padding:12px 16px}
+  .cmp-h,.cmp-r{padding:7px 16px}
+  .ex-q{min-height:268px;padding:15px 20px}
+  .ex-actions{padding:11px 20px}
+  .ex-stem{line-height:1.9;margin-bottom:16px}
+  .ex-pal{padding:13px 14px 15px}
+  .rs-left,.rs-right,.tb-left,.tb-right,.pg-left,.pg-right,
+  .bk-side,.st-left,.st-right,.pb-left,.pb-right,.ml-right{padding-top:13px;padding-bottom:13px}
+  .im-stage,.im-side{padding-top:14px;padding-bottom:14px}
+  .mon-grid{padding:13px}
+  .phone-in{min-height:330px}
+  .vstep{padding:9px 13px}
+  .vflow{margin-bottom:11px}
+  .sheet{padding:13px 16px}
+  .sq{padding:7px 0}
+  .roles{margin-top:10px}
+  .role{padding:8px 11px}
+  .shift{padding:5px 10px;margin-bottom:4px}
+  .st-tpl{padding:7px 18px}
+  .st-meta{margin-bottom:9px}
+  .pb-sub{margin:10px 0 6px}
+  .tog{padding:5px 0}
+  .login-box{padding:7px 11px;margin-top:7px}
+  .lf{margin-bottom:5px}
+  .code i{height:22px}
+  .ml-hd,.ml-r{padding:6px 18px}
+  .topper{padding:9px 11px;margin-bottom:6px}
+  .insight{padding:9px 11px;margin-bottom:6px}
+  .bar-row{margin-bottom:5px}
+  .qrow{padding:6px 0}
+}
+@media (min-width:901px) and (max-height:820px){
+  .slide{padding:24px 40px 56px}
+  .slide.pad-tight{padding:20px 32px 54px}
+  .head{margin-bottom:14px}
+  .slide.pad-tight .head{margin-bottom:10px}
+  h2{font-size:clamp(21px,2.6vw,28px)}
+  .head p{font-size:14.5px;margin-top:7px}
+  .demo-cap{font-size:13.5px;margin-top:7px}
+  .demo-bar{padding:6px 12px}
+  .ex-q{min-height:230px;padding:13px 18px}
+  .ex-actions{padding:9px 18px}
+  .ex-top{padding:8px 14px}
+  .ex-sec{padding:7px 16px}
+  .nav{height:46px}
+  .bk-q{padding:9px 16px}
+  .cmp-h,.cmp-r{padding:6px 14px}
+  .ml-hd,.ml-r{padding:5px 16px}
+  .qrow{padding:5px 0}
+  .bar-row{margin-bottom:4px}
+  .insight{padding:8px 10px;margin-bottom:5px}
+  .rs-tiles{margin-bottom:11px}
+  .tile{padding:10px 12px}
+  .tog{padding:4px 0}
+  .shift{padding:4px 10px;margin-bottom:4px}
+  .login-box{padding:6px 10px;margin-top:6px}
+  .lf{margin-bottom:4px}
+  .pb-row{padding:4px 0}
+  .st-tpl{padding:6px 16px}
+}
+
+
+/* ------------------------------------------------------------
+   Windows laptops at 125% / 150% display scaling report far
+   fewer CSS pixels than their panel suggests:
+     1366x768 @125% -> 1093x614      1366x768 @150% -> 911x512
+     1920x1080 @125% -> 1536x864     1920x1080 @150% -> 1280x720
+   Below ~720px of height the app specimens are scaled with
+   `zoom`, which (unlike transform) reflows their container, so
+   the slide shrinks in both directions and nothing scrolls.
+   ------------------------------------------------------------ */
+@media (min-width:901px) and (max-height:720px){
+  body{font-size:15px}
+  .slide{padding:20px 30px 48px}
+  .slide.pad-tight{padding:16px 26px 46px}
+  .head{margin-bottom:12px}
+  .slide.pad-tight .head{margin-bottom:9px}
+  h1{font-size:clamp(26px,4vw,38px)}
+  h2{font-size:clamp(19px,2.4vw,26px)}
+  .head p{font-size:13.5px;margin-top:6px}
+  .lede{font-size:15px}
+  .label{font-size:10px}
+  .demo-cap{font-size:12.5px;margin-top:6px}
+  .nav{height:42px;padding:0 22px}
+  .count{font-size:11px}
+  .arrow{width:30px;height:30px;font-size:13px}
+
+  /* one knob: scale the whole slide body, so every proportion is preserved */
+  .inner{zoom:.86}
+
+  .fig{padding:16px}
+  .fig figcaption{font-size:13px;margin-top:11px}
+  .prob{padding:16px 17px}
+  .prob p{font-size:14px}
+  .prob .prob-ic{width:28px;height:28px;margin-bottom:8px}
+  .prob .prob-ic svg{width:15px;height:15px}
+  .card{padding:14px 16px}
+  .card p{font-size:14px}
+  .card h3{font-size:16px}
+  .state{padding:11px 10px}
+  .state .chip{width:30px;height:30px;margin-bottom:7px}
+  .state b{font-size:13px}
+  .state span{font-size:12px}
+  .rel-item{padding:13px 15px;gap:12px}
+  .rel-ic{width:32px;height:32px}
+  .rel-item h3{font-size:15px}
+  .rel-item p{font-size:13.5px}
+  .exam-tag{padding:5px 13px;font-size:13px}
+  .exams{margin-top:24px}
+  .summary{margin-top:24px}
+  .sum{padding:15px}
+  .sum b{font-size:15.5px}
+  .sum span{font-size:13.5px}
+  .paper-split{grid-template-columns:300px 1fr;gap:22px}
+  .two-up{gap:16px}
+  .rel{gap:12px}
+}
+
+@media (min-width:901px) and (max-height:660px){ .inner{zoom:.78} }
+
+@media (min-width:901px) and (max-height:600px){
+  .slide{padding:14px 24px 42px}
+  .slide.pad-tight{padding:11px 20px 40px}
+  .head{margin-bottom:9px}
+  .slide.pad-tight .head{margin-bottom:7px}
+  .inner{zoom:.74}
+  .nav{height:36px}
+  .paper-split{grid-template-columns:280px 1fr;gap:18px}
+}
+
+@media (min-width:901px) and (max-height:540px){ .inner{zoom:.66} .nav{height:34px} }
+
+:focus-visible{outline:2px solid var(--accent-deep);outline-offset:3px}
+
+/* ============================================================
+   POLISH — depth, rhythm and affordance. Nothing here changes
+   the exam-interface palette; the specimens keep their own
+   colours exactly as they were.
+   ============================================================ */
+:root{
+  --sh-1:0 1px 2px rgba(20,23,28,.04), 0 1px 1px rgba(20,23,28,.03);
+  --sh-2:0 2px 4px rgba(20,23,28,.05), 0 6px 16px rgba(20,23,28,.05);
+  --sh-3:0 4px 10px rgba(20,23,28,.06), 0 18px 42px rgba(20,23,28,.09);
+  --nav-h:60px;
+  --gut:56px;
+}
+body{text-rendering:optimizeLegibility}
+figure{margin:0}   /* the UA default 40px side margin was pinching every figure */
+
+/* iOS Safari without dvh: --vh is kept in sync with the visible viewport */
+.deck{height:100vh;height:var(--vh,100vh)}
+@supports (height:100dvh){ .deck{height:100dvh} }
+
+/* a hairline of progress across the very top of the deck */
+.topprog{position:fixed;left:0;right:0;top:0;height:2px;z-index:60;
+  background:var(--rule-soft);pointer-events:none}
+.topprog i{display:block;height:100%;width:0;background:var(--accent-deep);
+  transition:width .38s cubic-bezier(.4,0,.2,1)}
+
+/* label gets a short leading rule so section titles read as a system */
+.head .label{position:relative;padding-left:26px}
+.head .label::before{content:"";position:absolute;left:0;top:50%;width:16px;height:1.5px;
+  background:var(--accent);opacity:.7}
+
+/* surfaces lift off the ground instead of sitting flat on it */
+.probs{box-shadow:var(--sh-2)}
+.card,.state,.step,.rel-item,.sum,.vstep,.role,.fig,.paper-shot,.cmp,.topper,.trend{
+  box-shadow:var(--sh-1)}
+.card,.state,.step,.rel-item,.sum,.prob,.fig{
+  transition:box-shadow .22s ease,transform .22s ease,border-color .22s ease}
+@media (hover:hover) and (pointer:fine){
+  .card:hover,.state:hover,.step:hover,.rel-item:hover,.sum:hover,.fig:hover{
+    box-shadow:var(--sh-2);transform:translateY(-1px)}
+  .prob:hover{background:var(--surface-2)}
+  .exam-tag{transition:border-color .2s ease,background .2s ease}
+  .exam-tag:hover{border-color:var(--accent);background:#fff}
+}
+
+/* the app specimens read as real windows */
+.demo{position:relative}
+.demo-bar{background:linear-gradient(#343a45,#282d36);
+  box-shadow:0 -1px 0 rgba(255,255,255,.06) inset}
+.demo-body{box-shadow:var(--sh-3)}
+.demo-cap{margin-top:12px}
+
+/* ---------------- nav ---------------- */
+.nav{
+  height:var(--nav-h);
+  background:linear-gradient(to top,var(--ground) 58%,rgba(240,241,243,.86) 82%,transparent);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:max(34px,env(safe-area-inset-left));
+  padding-right:max(34px,env(safe-area-inset-right));
+}
+.dots button{width:8px;height:8px;border-radius:99px;
+  transition:background .22s ease,width .22s ease,transform .22s ease}
+.dots button.on{width:22px;transform:none;background:var(--accent-deep)}
+.arrow{transition:border-color .18s ease,background .18s ease,color .18s ease}
+.arrow:hover:not([disabled]){border-color:var(--accent);color:var(--accent-deep);
+  background:var(--surface)}
+.arrow:active:not([disabled]){transform:translateY(1px)}
+.track{display:none}
+
+/* ============================================================
+   MOBILE — the deck is most often opened on a phone, so the app
+   specimens reflow into one column at real size instead of
+   living inside a 840px sideways-scrolling pane.
+   ============================================================ */
+@media (max-width:900px){
+  :root{--nav-h:58px;--gut:20px}
+  body{font-size:16px}
+
+  h1{font-size:clamp(30px,8.2vw,40px);line-height:1.1}
+  h2{font-size:clamp(23px,6.2vw,30px);line-height:1.18}
+  h3{font-size:17.5px}
+  .lede{font-size:16.5px;line-height:1.55}
+  .label{font-size:10px;letter-spacing:.13em}
+
+  .slide,.slide.pad-tight{
+    padding:calc(24px + env(safe-area-inset-top)) var(--gut)
+            calc(var(--nav-h) + 26px + env(safe-area-inset-bottom));
+    align-items:flex-start;
+  }
+  .head,.slide.pad-tight .head{margin-bottom:18px;max-width:none}
+  .head p{font-size:15px;margin-top:9px}
+
+  /* --- nav: 19 dots do not fit a phone. Progress bar instead. --- */
+  .nav{gap:14px;padding-left:max(18px,env(safe-area-inset-left));
+       padding-right:max(18px,env(safe-area-inset-right))}
+  .dots{display:none}
+  .track{display:block;flex:1;height:3px;border-radius:99px;background:#d7dce3;
+         overflow:hidden;min-width:40px}
+  .track i{display:block;height:100%;width:0;border-radius:99px;
+           background:var(--accent-deep);transition:width .34s cubic-bezier(.4,0,.2,1)}
+  .nav-right{gap:10px}
+  .count{font-size:12px}
+  .arrow{width:42px;height:42px;font-size:17px;border-radius:8px}
+  .brandmark{font-size:10px;letter-spacing:.14em}
+
+  /* --- specimens go fluid --- */
+  .ex,.im,.tb,.bk,.pb,.ml,.pg,.mon,.rs,.st{min-width:0;font-size:13.5px}
+  /* grid children default to min-width:auto and refuse to shrink — let them */
+  .ex-main>*,.im-main>*,.tb-body>*,.bk-body>*,.pb-body>*,
+  .ml-body>*,.pg-body>*,.rs-body>*,.st-body>*{min-width:0}
+  .demo-body{overflow-x:hidden;border-radius:0 0 6px 6px}
+  .demo-bar .u{font-size:10px}
+  .demo-cap{font-size:14px;margin-top:11px}
+
+  /* exam player */
+  .ex-top{flex-wrap:wrap;gap:10px;padding:10px 13px}
+  .ex-cand{flex:1 0 100%}
+  .ex-cand dl{font-size:11px}
+  .ex-timer{order:2;margin-left:0;text-align:left;display:flex;align-items:center;gap:9px}
+  .ex-timer .t-val{font-size:17px}
+  .ex-lang{order:3;margin-left:auto}
+  .ex-sections{overflow-x:auto;padding:0 13px;scrollbar-width:none}
+  .ex-sections::-webkit-scrollbar{display:none}
+  .ex-sec{white-space:nowrap;padding:9px 12px;font-size:12.5px}
+  .ex-main{grid-template-columns:1fr}
+  .ex-q{border-right:none;border-bottom:1px solid #e3e6ea;min-height:0;padding:15px 14px}
+  .ex-stem{font-size:16px;line-height:1.95}
+  .ex-opts{grid-template-columns:1fr 1fr;gap:11px 24px;max-width:520px}
+  .ex-actions{padding:12px 14px}
+  .ex-btn{padding:10px 14px}
+  .ex-nav{margin-left:0;width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .ex-pal{padding:14px 14px 16px}
+  .ex-legend{max-width:420px}
+  .ex-palgrid{grid-template-columns:repeat(auto-fill,minmax(34px,1fr));max-width:420px}
+
+  /* import review */
+  .im-main{grid-template-columns:1fr}
+  .im-stage{border-right:none;border-bottom:1px solid #e3e6ea;padding:15px 14px}
+  .im-crop{padding:14px 15px;font-size:14.5px;line-height:1.8}
+  .im-opts{grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px;white-space:normal}
+  .im-side{padding:15px 14px}
+
+  /* teacher batch */
+  .tb-top,.bk-top,.pb-top,.ml-top,.pg-top,.mon-top,.rs-top,.st-top,.im-top{
+    flex-wrap:wrap;gap:8px 12px;padding:11px 14px}
+  .tb-body,.bk-body,.pb-body,.ml-body,.pg-body,.rs-body,.st-body{grid-template-columns:1fr}
+  .tb-left,.bk-side,.pb-left,.ml-left,.pg-left,.rs-left,.st-left{
+    border-right:none;border-bottom:1px solid #e3e6ea}
+  .tb-left,.tb-right,.pb-left,.pb-right,.pg-left,.pg-right,
+  .rs-left,.rs-right,.st-left,.st-right,.ml-right{padding-left:14px;padding-right:14px}
+  .qrow{grid-template-columns:70px minmax(0,1fr) 82px;gap:9px}
+  .qrow .qch{overflow:hidden;text-overflow:ellipsis}
+  .qrow .qpct{white-space:nowrap;font-size:11.5px}
+  .heat-key{flex-wrap:wrap;gap:6px 8px;line-height:1.3}
+  .bar-row{grid-template-columns:118px minmax(0,1fr) 32px;gap:8px;font-size:12.5px}
+  .bar-row span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* question bank — the filter rail becomes a short filter bar above the list
+     instead of a full screen of checkboxes before the first question */
+  .bk-side{background:#fbfcfd;padding:12px 14px;
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 10px;align-items:start}
+  .bk-grp{margin-bottom:0}
+  .bk-grp p{font-size:9.5px}
+  .bk-opt{font-size:11.5px;gap:6px}
+  .bk-opt .ct{display:none}
+  .bk-q{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:11px 14px}
+  .bk-q .txt{flex:1 0 100%;white-space:normal;font-size:14px}
+  .bk-q .used{margin-left:auto;text-align:right}
+
+  /* paper builder */
+  .pb-row{grid-template-columns:1fr 52px 96px;gap:10px}
+
+  /* merit list */
+  .ml-tabs{overflow-x:auto;padding:0 14px;scrollbar-width:none}
+  .ml-tabs::-webkit-scrollbar{display:none}
+  .ml-tab{white-space:nowrap;padding:9px 13px}
+  .ml-hd,.ml-r{grid-template-columns:30px minmax(0,1fr) 42px 54px 46px;gap:6px;
+    padding:8px 14px;font-size:12px}
+  .ml-hd{font-size:9px;letter-spacing:.03em}
+  .ml-hd span{overflow:hidden;text-overflow:ellipsis}
+  .ml-r.top .rk{width:24px;height:22px;font-size:11.5px}
+
+  /* live monitor */
+  .mon-stats{margin-left:0;width:100%;gap:0;justify-content:space-between;text-align:left}
+  .mon-stats b{font-size:17px}
+  .mon-grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:7px;padding:14px}
+  .mon-alert{padding:11px 14px}
+
+  /* results */
+  .rs-tiles{gap:8px}
+  .tile{padding:11px 11px}
+  .tile .v{font-size:20px}
+
+  /* exam setup */
+  .st-tpl{padding:9px 14px}
+  .st-meta{grid-template-columns:auto 1fr;gap:4px 12px}
+
+  /* verification sheet */
+  .vways{flex-wrap:wrap}
+  .roles{grid-template-columns:1fr 1fr;gap:7px}
+
+  /* figures and misc — a 900-unit-wide timeline shrinks its own type to
+     nothing on a phone, so it keeps a legible width and pans instead */
+  .fig{padding:18px}
+  .fig-wide{padding:14px;overflow-x:auto;overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch}
+  .fig-wide svg{min-width:660px}
+  .fig figcaption{font-size:13.5px;margin-top:12px}
+  .paper-split,.share-split{gap:20px}
+  .paper-shot{padding:12px}
+  .two-up,.rel,.summary,.probs{gap:12px}
+  /* the five states read as icon + title + gloss, not three columns */
+  .state{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 13px;
+    align-items:center;text-align:left;padding:13px 15px}
+  .state .chip{grid-row:1/3;width:28px;height:28px;margin:0}
+  .state b{align-self:end;font-size:14.5px}
+  .state span{align-self:start;font-size:13px}
+  .probs{gap:1px}
+  .prob{padding:20px 20px}
+  .exams{gap:8px;margin-top:24px}
+  .phone{max-width:300px;margin:0 auto}
+  .sline{grid-template-columns:74px minmax(0,1fr) 32px;gap:7px}
+  .cmp-r{padding:12px 14px}
+  .cmp-r b{display:block;margin-bottom:2px}
+}
+
+/* --------- small phones --------- */
+@media (max-width:560px){
+  :root{--gut:16px}
+  body{font-size:15.5px}
+  h1{font-size:clamp(27px,8.4vw,34px)}
+  h2{font-size:clamp(21px,6.4vw,27px)}
+  .lede{font-size:16px}
+  .head p{font-size:14.5px}
+  .rs-tiles{grid-template-columns:1fr 1fr}
+  .rs-tiles .tile:last-child{grid-column:1/-1}
+  .heat{grid-template-columns:repeat(6,1fr)}
+  .brandmark{display:none}
+  .ex-palgrid{grid-template-columns:repeat(auto-fill,minmax(32px,1fr))}
+  .ex-sec{padding:9px 9px;font-size:11.5px}
+  .ex-sec.locked::after{font-size:10px}
+  .ex-opts{grid-template-columns:1fr;gap:11px}
+  .im-opts{grid-template-columns:1fr;gap:6px}
+  .sq{grid-template-columns:1fr;gap:8px}
+  .sq .chk{border-left:none;border-top:1px dashed var(--rule-soft);padding-left:0;padding-top:8px}
+  .sq .chk .row2{display:inline-flex;margin-right:16px}
+  .demo-bar .u{display:none}
+  .state{padding:12px 14px}
+  .prob{padding:18px 17px}
+  .prob p{font-size:14.5px}
+}
+
+/* --------- very narrow phones --------- */
+@media (max-width:400px){
+  .bk-side{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bk-grp{margin-bottom:10px}
+  .rs-tiles{grid-template-columns:1fr 1fr}
+  .mon-stats{flex-wrap:wrap;gap:10px 18px}
+}
+
+/* --------- phone in landscape: short and wide --------- */
+@media (max-width:900px) and (max-height:520px) and (orientation:landscape){
+  .slide,.slide.pad-tight{padding:16px var(--gut) calc(var(--nav-h) + 14px)}
+  :root{--nav-h:46px}
+  .head,.slide.pad-tight .head{margin-bottom:12px}
+  h1{font-size:clamp(24px,5vw,30px)}
+  h2{font-size:clamp(19px,3.6vw,24px)}
+  .arrow{width:36px;height:36px}
+}
+
+/* a strip that really does scroll sideways says so with a soft right edge */
+.can-pan{
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent);
+  mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent);
+}
+
+/* respect the reduced-motion preference for the new transitions too */
+@media (prefers-reduced-motion:reduce){
+  .topprog i,.track i,.dots button,.card,.state,.step,.rel-item,.sum,.prob,.fig{
+    transition:none}
+}
 </style>
 </head>
 <body>
+
+<div class="topprog" aria-hidden="true"><i id="topfill"></i></div>
 
 <main class="deck" id="deck">
 
@@ -362,6 +1082,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
     <div class="exams">
       <span class="exam-tag">MHT-CET</span>
       <span class="exam-tag">JEE Main</span>
+      <span class="exam-tag">JEE Advanced</span>
       <span class="exam-tag">NEET</span>
       <span class="exam-tag">Your own chapter tests</span>
     </div>
@@ -378,18 +1099,21 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
     <div class="probs">
       <div class="prob">
         <div class="n">01</div>
+        <div class="prob-ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="1.6"/><path d="M8.5 21h7M12 17v4M7 8.5h6M7 12h4"/></svg></div>
         <h3>It should match the real exam</h3>
         <p>The same screen, the same question states, the same rules about saving an answer, the same
           way sections open and close. Anything else trains students for an exam that does not exist.</p>
       </div>
       <div class="prob">
         <div class="n">02</div>
+        <div class="prob-ic"><svg viewBox="0 0 24 24"><path d="M14 2.5H6.5A1.5 1.5 0 005 4v16a1.5 1.5 0 001.5 1.5h11A1.5 1.5 0 0019 20V7.5z"/><path d="M14 2.5V7.5H19M8.5 12h7M8.5 15.5h7"/></svg></div>
         <h3>It should use your papers</h3>
         <p>You already write and print excellent question papers. The system reads those directly,
           keeping your equations and diagrams exactly as they are.</p>
       </div>
       <div class="prob">
         <div class="n">03</div>
+        <div class="prob-ic"><svg viewBox="0 0 24 24"><path d="M12 2.5l8 3.2v6c0 4.6-3.3 8.4-8 9.8-4.7-1.4-8-5.2-8-9.8v-6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
         <h3>It should survive exam day</h3>
         <p>Power cuts, a machine that dies in the ninetieth minute, a connection that drops for
           twenty seconds. This is where trust in a result is won or lost.</p>
@@ -407,7 +1131,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
       <p>Built to match the official interface — the same layout, the same colours, the same button
         names, so nothing on the real exam day is unfamiliar.</p>
     </div>
-    <div>
+    <div class="demo">
       <div class="demo-bar">
         <div class="tl"><i></i><i></i><i></i></div>
         <div class="u">MHT-CET Practice Test &#183; Shift 1 &#183; Mathematics</div>
@@ -522,12 +1246,12 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
 <section class="slide" id="s5">
   <div class="inner">
     <div class="head">
-      <span class="label">MHT-CET</span>
-      <h2>The 90-minute split, handled properly</h2>
-      <p>Physics and Chemistry run together for the first 90 minutes, then Mathematics for the second.
-        When the first block ends it closes, and a candidate cannot go back.</p>
+      <span class="label">Every exam, its own rules</span>
+      <h2>Set up from the official pattern</h2>
+      <p>MHT-CET, for example, runs Physics and Chemistry together for 90 minutes, then Mathematics.
+        When the first block ends it closes and a candidate cannot go back.</p>
     </div>
-    <figure class="fig">
+    <figure class="fig fig-wide">
       <svg viewBox="0 0 900 168" width="100%" role="img" aria-label="Physics and Chemistry share the first ninety minutes, Mathematics takes the second ninety">
         <text x="0" y="15" font-family="Roboto Mono, monospace" font-size="11" fill="#9aa2b0">0 MIN</text>
         <text x="404" y="15" font-family="Roboto Mono, monospace" font-size="11" fill="#9aa2b0">90 MIN</text>
@@ -540,18 +1264,23 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
         <rect x="452" y="28" width="424" height="56" rx="3" fill="#eef1f5" stroke="#d7dbe2"/>
         <rect x="464" y="38" width="400" height="36" rx="2" fill="#fff" stroke="#c9cfd8"/>
         <text x="664" y="61" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="13.5" fill="#14171c">Mathematics &#183; 50 Q &#183; 2 marks each</text>
-        <line x1="438" y1="22" x2="438" y2="108" stroke="#e24401" stroke-width="2" stroke-dasharray="5 4"/>
-        <text x="438" y="124" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12.5" font-weight="600" fill="#e24401">Block closes</text>
+        <line x1="438" y1="22" x2="438" y2="108" stroke="#b47f6e" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="438" y="124" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12.5" font-weight="600" fill="#a06e5e">Block closes</text>
         <text x="438" y="140" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#626a78">no going back</text>
         <text x="212" y="102" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#626a78">move freely between these two</text>
         <text x="664" y="102" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#626a78">opens only at 90 minutes</text>
         <text x="0" y="162" font-family="Public Sans, sans-serif" font-size="12" fill="#9aa2b0">200 marks &#183; no negative marking &#183; matches the MHT-CET 2026 information brochure</text>
       </svg>
-      <figcaption>
-        Each exam is set up from its own official pattern &mdash; JEE Main&rsquo;s +4 and &minus;1 marking
-        and its numerical-answer questions, or your own chapter test with whatever timing you choose.
-      </figcaption>
     </figure>
+
+    <div class="cmp">
+      <div class="cmp-h"><span>Exam</span><span>Shape</span><span>Marking</span><span>Question types</span></div>
+      <div class="cmp-r"><b>MHT-CET</b><span>150 Q &#183; two 90-min blocks</span><span>No negative marking</span><span>Single correct</span></div>
+      <div class="cmp-r"><b>JEE Main</b><span>75 Q &#183; one 180-min block</span><span>+4 / &minus;1, both sections</span><span>Single correct, numerical</span></div>
+      <div class="cmp-r"><b>JEE Advanced</b><span>Two papers, same day</span><span>Partial marks &#183; +4 / +3 / +2 / +1 / &minus;2</span><span>Multiple correct, match the list, paragraph sets, integer</span></div>
+      <div class="cmp-r"><b>NEET</b><span>180 min</span><span>+4 / &minus;1</span><span>Single correct</span></div>
+      <div class="cmp-r own"><b>Your own test</b><span>Any length you set</span><span>Your marks, your rules</span><span>Whatever the paper uses</span></div>
+    </div>
   </div>
 </section>
 
@@ -561,39 +1290,90 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
     <div class="head">
       <span class="label">Your question papers</span>
       <h2>From the PDF you already print</h2>
-      <p>No retyping, no re-drawing. The paper is read directly, each question is separated out, and
-        your equations and diagrams stay exactly as they were.</p>
+      <p>No retyping, no re-drawing. Each question is found on the page and lifted out whole &mdash;
+        equations, diagrams and options exactly as you set them.</p>
     </div>
-    <figure class="fig" style="margin-bottom:24px">
-      <svg viewBox="0 0 900 122" width="100%" role="img" aria-label="Your PDF, questions separated, answer key matched, ready to use">
-        <rect x="0" y="16" width="176" height="72" rx="3" fill="#fff" stroke="#d7dbe2"/>
-        <text x="88" y="46" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="13.5" font-weight="600" fill="#14171c">Your PDF</text>
-        <text x="88" y="66" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#626a78">as you already print it</text>
-        <path d="M186 52 L226 52" stroke="#b8c0cb" stroke-width="1.5"/><path d="M220 47 L228 52 L220 57 Z" fill="#b8c0cb"/>
-        <rect x="236" y="16" width="176" height="72" rx="3" fill="#fff" stroke="#d7dbe2"/>
-        <text x="324" y="46" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="13.5" font-weight="600" fill="#14171c">Questions separated</text>
-        <text x="324" y="66" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#626a78">diagrams kept intact</text>
-        <path d="M422 52 L462 52" stroke="#b8c0cb" stroke-width="1.5"/><path d="M456 47 L464 52 L456 57 Z" fill="#b8c0cb"/>
-        <rect x="472" y="16" width="176" height="72" rx="3" fill="#fff" stroke="#d7dbe2"/>
-        <text x="560" y="46" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="13.5" font-weight="600" fill="#14171c">Answer key matched</text>
-        <text x="560" y="66" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#626a78">by question number</text>
-        <path d="M658 52 L698 52" stroke="#b8c0cb" stroke-width="1.5"/><path d="M692 47 L700 52 L692 57 Z" fill="#b8c0cb"/>
-        <rect x="708" y="16" width="176" height="72" rx="3" fill="#f2faf4" stroke="#bde0c6"/>
-        <text x="796" y="46" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="13.5" font-weight="600" fill="#1d7a3d">Ready to use</text>
-        <text x="796" y="66" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="12" fill="#4a7d5c">you check and confirm</text>
-        <text x="0" y="112" font-family="Public Sans, sans-serif" font-size="12" fill="#9aa2b0">Because each question keeps its number, your existing answer key lines up with it automatically.</text>
-      </svg>
-    </figure>
-    <div class="two-up">
-      <div class="card">
-        <h3>Once a question is in, it stays in</h3>
-        <p>Every paper adds to a question bank you own, organised by subject, chapter and difficulty.
-          Next term&rsquo;s paper can be assembled from it in a few clicks.</p>
-      </div>
-      <div class="card">
-        <h3>Nothing is lost in translation</h3>
-        <p>Equations, circuit diagrams and chemical structures appear on screen exactly as they do on
-          your printed paper.</p>
+
+    <div class="paper-split">
+      <figure class="paper-shot">
+        <svg viewBox="0 0 290 372" width="100%" role="img" aria-label="A question paper page with each question outlined and numbered">
+          <rect x="0" y="0" width="290" height="372" fill="#fff" stroke="#d7dbe2"/>
+          <!-- header -->
+          <text x="145" y="17" text-anchor="middle" font-family="Source Serif 4, serif" font-size="9" fill="#626a78">Crash Course &#183; 12th CET Pattern Exam</text>
+          <line x1="14" y1="24" x2="276" y2="24" stroke="#e7eaef"/>
+          <text x="14" y="34" font-family="Source Serif 4, serif" font-size="7" fill="#9aa2b0">Mathematics</text>
+          <text x="276" y="34" text-anchor="end" font-family="Source Serif 4, serif" font-size="7" fill="#9aa2b0">Marks : 100</text>
+
+          <g stroke="#e7eaef" stroke-width="2.6" stroke-linecap="round">
+            <!-- col 1 q101 -->
+            <path d="M22 54h84M22 62h108M22 70h64"/>
+            <path d="M22 84h40M78 84h44M22 94h40M78 94h44"/>
+            <!-- col 1 q102 -->
+            <path d="M22 126h100M22 134h72"/>
+            <path d="M22 148h40M78 148h44M22 158h40M78 158h44"/>
+            <!-- col 1 q103 -->
+            <path d="M22 190h108M22 198h92M22 206h56"/>
+            <path d="M22 220h40M78 220h44M22 230h40M78 230h44"/>
+            <!-- col 1 q104 -->
+            <path d="M22 262h96M22 270h104"/>
+            <path d="M22 284h40M78 284h44M22 294h40M78 294h44"/>
+            <!-- col 2 q105 -->
+            <path d="M162 54h92M162 62h68"/>
+            <path d="M162 76h40M218 76h44M162 86h40M218 86h44"/>
+            <!-- col 2 q106 -->
+            <path d="M162 118h104M162 126h84M162 134h48"/>
+            <path d="M162 148h40M218 148h44M162 158h40M218 158h44"/>
+            <!-- col 2 q107 diagram -->
+            <path d="M162 190h88"/>
+          </g>
+          <rect x="162" y="198" width="58" height="34" fill="#f7f8fa" stroke="#dfe3e9"/>
+          <path d="M170 226l10-16 10 10 8-12" stroke="#b8c0cb" fill="none" stroke-width="1.4"/>
+          <g stroke="#e7eaef" stroke-width="2.6" stroke-linecap="round">
+            <path d="M162 244h40M218 244h44M162 254h40M218 254h44"/>
+            <!-- col 2 q108 -->
+            <path d="M162 286h96M162 294h60"/>
+            <path d="M162 308h40M218 308h44M162 318h40M218 318h44"/>
+          </g>
+
+          <!-- crop boxes -->
+          <g fill="none" stroke="#6b7f96" stroke-width="1.4">
+            <rect x="16" y="46" width="118" height="58" rx="1.5"/>
+            <rect x="16" y="118" width="118" height="50" rx="1.5"/>
+            <rect x="16" y="182" width="118" height="58" rx="1.5"/>
+            <rect x="16" y="254" width="118" height="50" rx="1.5"/>
+            <rect x="156" y="46" width="118" height="50" rx="1.5"/>
+            <rect x="156" y="110" width="118" height="58" rx="1.5"/>
+            <rect x="156" y="182" width="118" height="82" rx="1.5"/>
+            <rect x="156" y="278" width="118" height="50" rx="1.5"/>
+          </g>
+          <g font-family="Roboto Mono, monospace" font-size="7.2" font-weight="500" fill="#fff">
+            <rect x="16" y="40" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="26" y="47.4" text-anchor="middle">101</text>
+            <rect x="16" y="112" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="26" y="119.4" text-anchor="middle">102</text>
+            <rect x="16" y="176" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="26" y="183.4" text-anchor="middle">103</text>
+            <rect x="16" y="248" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="26" y="255.4" text-anchor="middle">104</text>
+            <rect x="156" y="40" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="166" y="47.4" text-anchor="middle">105</text>
+            <rect x="156" y="104" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="166" y="111.4" text-anchor="middle">106</text>
+            <rect x="156" y="176" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="166" y="183.4" text-anchor="middle">107</text>
+            <rect x="156" y="272" width="20" height="10" rx="1.5" fill="#6b7f96"/><text x="166" y="279.4" text-anchor="middle">108</text>
+          </g>
+          <line x1="145" y1="40" x2="145" y2="336" stroke="#eef1f4"/>
+          <text x="145" y="352" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="8.5" fill="#9aa2b0">page 1 of 5 &#183; 8 of 50 questions</text>
+        </svg>
+        <figcaption>Every question located and lifted out, diagrams included</figcaption>
+      </figure>
+
+      <div>
+        <div class="steps">
+          <div class="step"><span class="sn">1</span><div><b>Upload the paper</b><span>The same PDF you send to the printer.</span></div></div>
+          <div class="step"><span class="sn">2</span><div><b>Questions are found</b><span>Each one located by its number and separated out.</span></div></div>
+          <div class="step"><span class="sn">3</span><div><b>Your answer key lines up</b><span>Matched question by question, automatically.</span></div></div>
+          <div class="step"><span class="sn">4</span><div><b>You check and confirm</b><span>A glance at each one, then it is ready to use.</span></div></div>
+        </div>
+        <div class="card">
+          <h3>Once a question is in, it stays in</h3>
+          <p>Every paper adds to a question bank you own, organised by subject, chapter and
+            difficulty &mdash; so next term&rsquo;s paper can be assembled from it in a few clicks.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -608,7 +1388,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
       <p>The answer and the chapter are filled in for you. You glance at each question and press
         Enter. Nothing needs to be typed.</p>
     </div>
-    <div>
+    <div class="demo">
       <div class="demo-bar">
         <div class="tl"><i></i><i></i><i></i></div>
         <div class="u">Crash Course Maths &#183; 30 Dec 2023.pdf</div>
@@ -674,6 +1454,288 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
   </div>
 </section>
 
+<!-- ==================== VERIFICATION + ROLES ==================== -->
+<section class="slide pad-tight" id="sVerify">
+  <div class="inner">
+    <div class="head" style="margin-bottom:18px">
+      <span class="label">Who does what</span>
+      <h2>A teacher passes it before it counts</h2>
+      <p>The operator brings the paper in. The subject teacher checks and corrects it &mdash; on screen,
+        or on a printed sheet.</p>
+    </div>
+
+    <div class="vflow">
+      <div class="vstep">
+        <div class="who">Operator</div>
+        <b>Brings the paper in</b>
+        <span>Uploads the PDF and the answer key. Cannot publish anything.</span>
+      </div>
+      <div class="varr">&#8594;</div>
+      <div class="vstep mid">
+        <div class="who">Subject teacher</div>
+        <b>Checks and corrects</b>
+        <span>Two ways, whichever suits:</span>
+        <div class="vways">
+          <div class="vway"><b>On screen</b>tick and move on</div>
+          <div class="vway"><b>On paper</b>mark the sheet</div>
+        </div>
+      </div>
+      <div class="varr">&#8594;</div>
+      <div class="vstep">
+        <div class="who">Ready</div>
+        <b>Goes into the bank</b>
+        <span>Only teacher-passed questions can appear in a paper.</span>
+      </div>
+    </div>
+
+    <div class="proof-split">
+      <div class="sheet">
+        <div class="sheet-hd">
+          <b>Verification sheet &mdash; Mathematics</b>
+          <span>Crash Course &#183; 30 Dec 2023 &#183; page 1 of 5</span>
+        </div>
+        <div class="sq">
+          <div class="body">
+            <span class="qn2">101.</span> Given that cos<span class="frac"><span class="num">&#945;&minus;&#946;</span><span class="den">2</span></span> = 2&#8202;cos<span class="frac"><span class="num">&#945;+&#946;</span><span class="den">2</span></span>, then tan<span class="frac"><span class="num">&#945;</span><span class="den">2</span></span>&#183;tan<span class="frac"><span class="num">&#946;</span><span class="den">2</span></span> is equal to
+            <div class="opts2"><span>1) 1/2</span><span>2) 1/3</span><span><u>3) 1/4</u></span><span>4) 1/8</span></div>
+          </div>
+          <div class="chk">
+            <div class="row2"><span class="bx t"></span>Correct as shown</div>
+            <div class="row2"><span class="bx"></span>Needs a change</div>
+            <div class="line2"></div>
+          </div>
+        </div>
+        <div class="sq">
+          <div class="body">
+            <span class="qn2">102.</span> The value of (sin&#8202;55&#176; &minus; cos&#8202;55&#176;) / sin&#8202;10&#176; is
+            <div class="opts2"><span>1) 1/&#8730;2</span><span><u>2) &#8730;2</u></span><span>3) 1</span><span>4) 2</span></div>
+          </div>
+          <div class="chk">
+            <div class="row2"><span class="bx"></span>Correct as shown</div>
+            <div class="row2"><span class="bx t"></span>Needs a change</div>
+            <div class="line2" style="border-color:var(--c-low)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card accent" style="margin-bottom:12px">
+          <h3>Printed exactly as the students will see it</h3>
+          <p>The sheet shows each question as it will appear on screen, with the marked answer
+            underlined. A teacher sits with a pen, ticks what is right, writes what is wrong, and
+            hands it back &mdash; no computer needed.</p>
+        </div>
+      </div>
+    </div>
+
+        <div class="roles">
+          <div class="role"><b>Operator</b><span>Uploads papers and answer keys.</span><span class="no2">Cannot approve or publish.</span></div>
+          <div class="role"><b>Subject teacher</b><span>Checks, corrects and approves questions. Sees their batches&rsquo; results.</span></div>
+          <div class="role"><b>Coordinator</b><span>Builds papers, schedules shifts, manages students and staff.</span></div>
+          <div class="role"><b>Invigilator</b><span>During their exam: live screen, adding time, freeing a seat.</span><span class="no2">No access to answers.</span></div>
+          <div class="role"><b>Student</b><span>Sits the exam, sees their own result.</span><span class="no2">Never sees an answer key.</span></div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 8 · QUESTION BANK ==================== -->
+<section class="slide pad-tight" id="sBank">
+  <div class="inner">
+    <div class="head">
+      <span class="label">What you build up</span>
+      <h2>Your question bank, and it keeps growing</h2>
+      <p>Every paper you bring in adds to it. Sorted by subject, chapter and difficulty, searchable,
+        and it stays yours.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="tl"><i></i><i></i><i></i></div>
+        <div class="u">Question bank &#183; Mathematics</div>
+      </div>
+      <div class="demo-body">
+        <div class="bk">
+          <div class="bk-top">
+            <strong style="font-size:15px">Question bank</strong>
+            <span style="font-size:13px;color:#767d89"><b style="font-family:'Roboto Mono',monospace;color:var(--navy)">4,820</b> questions &#183; 312 added this month</span>
+            <span class="bk-search" style="margin-left:auto">Search questions&hellip;</span>
+          </div>
+          <div class="bk-body">
+            <div class="bk-side">
+              <div class="bk-grp">
+                <p>Subject</p>
+                <div class="bk-opt"><span class="bk-box"></span>Physics<span class="ct">1,604</span></div>
+                <div class="bk-opt"><span class="bk-box"></span>Chemistry<span class="ct">1,588</span></div>
+                <div class="bk-opt"><span class="bk-box on"></span>Mathematics<span class="ct">1,628</span></div>
+              </div>
+              <div class="bk-grp">
+                <p>Chapter</p>
+                <div class="bk-opt"><span class="bk-box on"></span>Circle<span class="ct">142</span></div>
+                <div class="bk-opt"><span class="bk-box"></span>Trigonometry<span class="ct">198</span></div>
+                <div class="bk-opt"><span class="bk-box"></span>Matrices<span class="ct">126</span></div>
+                <div class="bk-opt"><span class="bk-box"></span>Probability<span class="ct">154</span></div>
+              </div>
+              <div class="bk-grp">
+                <p>Difficulty</p>
+                <div class="bk-opt"><span class="bk-box"></span>Easy<span class="ct">521</span></div>
+                <div class="bk-opt"><span class="bk-box on"></span>Medium<span class="ct">744</span></div>
+                <div class="bk-opt"><span class="bk-box"></span>Hard<span class="ct">363</span></div>
+              </div>
+            </div>
+            <div class="bk-list">
+              <div class="bk-q"><span class="txt">The equation of the circle passing through (1,&#8202;0) and (0,&#8202;1)&hellip;</span><span class="ch">Circle</span><span><span class="dchip m">Medium</span></span><span class="used">used 3&#215;</span></div>
+              <div class="bk-q"><span class="txt">If the line 3x &minus; 4y = k touches the circle x&#178; + y&#178; = 25&hellip;</span><span class="ch">Circle</span><span><span class="dchip m">Medium</span></span><span class="used">used 5&#215;</span></div>
+              <div class="bk-q"><span class="txt">The parametric equations of the circle (x &minus; 3)&#178; + (y &minus; 2)&#178; = 100&hellip;</span><span class="ch">Circle</span><span><span class="dchip e">Easy</span></span><span class="used">used 7&#215;</span></div>
+              <div class="bk-q"><span class="txt">Two circles intersect orthogonally. The length of the common chord&hellip;</span><span class="ch">Circle</span><span><span class="dchip h">Hard</span></span><span class="used">new</span></div>
+              <div class="bk-q"><span class="txt">The radius of the circle inscribed in the triangle formed by&hellip;</span><span class="ch">Circle</span><span><span class="dchip m">Medium</span></span><span class="used">used 2&#215;</span></div>
+              <div class="bk-q"><span class="txt">If (2,&#8202;&minus;3) is the centre and the circle passes through the origin&hellip;</span><span class="ch">Circle</span><span><span class="dchip e">Easy</span></span><span class="used">used 4&#215;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-cap">
+        <b>It also remembers where each question has been used</b> &mdash; so the same question does not
+        turn up in two consecutive tests for the same batch.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 9 · PAPER BUILDER ==================== -->
+<section class="slide pad-tight" id="sBuild">
+  <div class="inner">
+    <div class="head">
+      <span class="label">The next paper</span>
+      <h2>Choose the pattern, choose the chapters, done</h2>
+      <p>Pick how many questions from each chapter and the paper assembles itself from your bank,
+        with the right difficulty mix and the right marks.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="tl"><i></i><i></i><i></i></div>
+        <div class="u">New paper &#183; MHT-CET PCM</div>
+      </div>
+      <div class="demo-body">
+        <div class="pb">
+          <div class="pb-top">
+            <strong style="font-size:15px">New paper</strong>
+            <span style="font-size:13px;color:#767d89">Practice Test 5 &#183; 12th A</span>
+          </div>
+          <div class="pb-body">
+            <div class="pb-left">
+              <div class="pb-pattern">
+                <span class="pb-pill on">MHT-CET PCM</span>
+                <span class="pb-pill">MHT-CET PCB</span>
+                <span class="pb-pill">JEE Main</span>
+                <span class="pb-pill">JEE Advanced</span>
+                <span class="pb-pill">NEET</span>
+                <span class="pb-pill">Chapter test</span>
+              </div>
+              <div class="pb-sub">Mathematics &#183; 50 questions &#183; 2 marks each</div>
+              <div class="pb-row"><span>Trigonometry</span><span class="pb-num">10</span><span class="pb-mix"><i style="width:34%;background:var(--c-good)"></i><i style="width:46%;background:var(--c-mid)"></i><i style="width:20%;background:var(--c-low)"></i></span></div>
+              <div class="pb-row"><span>Circle</span><span class="pb-num">8</span><span class="pb-mix"><i style="width:38%;background:var(--c-good)"></i><i style="width:50%;background:var(--c-mid)"></i><i style="width:12%;background:var(--c-low)"></i></span></div>
+              <div class="pb-row"><span>Vectors &amp; 3D</span><span class="pb-num">10</span><span class="pb-mix"><i style="width:30%;background:var(--c-good)"></i><i style="width:45%;background:var(--c-mid)"></i><i style="width:25%;background:var(--c-low)"></i></span></div>
+              <div class="pb-row"><span>Matrices</span><span class="pb-num">8</span><span class="pb-mix"><i style="width:40%;background:var(--c-good)"></i><i style="width:40%;background:var(--c-mid)"></i><i style="width:20%;background:var(--c-low)"></i></span></div>
+              <div class="pb-row"><span>Probability</span><span class="pb-num">7</span><span class="pb-mix"><i style="width:35%;background:var(--c-good)"></i><i style="width:45%;background:var(--c-mid)"></i><i style="width:20%;background:var(--c-low)"></i></span></div>
+              <div class="pb-row"><span>Differential Equations</span><span class="pb-num">7</span><span class="pb-mix"><i style="width:30%;background:var(--c-good)"></i><i style="width:48%;background:var(--c-mid)"></i><i style="width:22%;background:var(--c-low)"></i></span></div>
+              <div style="margin-top:10px;font-size:11.5px;color:#949cab;display:flex;gap:14px">
+                <span><i style="display:inline-block;width:9px;height:6px;border-radius:3px;background:var(--c-good)"></i> easy</span>
+                <span><i style="display:inline-block;width:9px;height:6px;border-radius:3px;background:var(--c-mid)"></i> medium</span>
+                <span><i style="display:inline-block;width:9px;height:6px;border-radius:3px;background:var(--c-low)"></i> hard</span>
+              </div>
+            </div>
+            <div class="pb-right">
+              <div class="pb-sub" style="margin-top:0">Ready to generate</div>
+              <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>150 of 150 questions &#183; Physics 50, Chemistry 50, Mathematics 50</span></div>
+              <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>200 marks, matching the pattern</span></div>
+              <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>Every question has an answer</span></div>
+              <div class="pb-check"><span class="tick" style="background:var(--c-good)">&#10003;</span><span>None repeated from this batch&rsquo;s last 3 tests</span></div>
+              <div class="pb-check"><span class="tick" style="background:var(--c-mid)">!</span><span>Hard questions are 21% &mdash; slightly above your usual 18%</span></div>
+              <button class="pb-go">Generate paper</button>
+              <div style="margin-top:10px;font-size:11.5px;color:#767d89;line-height:1.8">
+                You can swap any question before publishing.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-cap">
+        <b>Or set your own pattern</b> &mdash; a 25-question chapter test on a Saturday morning uses the
+        same screen, with your own timing and marks.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EXAM SETUP ==================== -->
+<section class="slide pad-tight" id="sSetup">
+  <div class="inner">
+    <div class="head" style="margin-bottom:18px">
+      <span class="label">Setting up an exam</span>
+      <h2>Your own exam templates</h2>
+      <p>Set a format once, and every exam after that is a few clicks.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="tl"><i></i><i></i><i></i></div>
+        <div class="u">New exam &#183; Practice Test 5</div>
+      </div>
+      <div class="demo-body">
+        <div class="st">
+          <div class="st-top">
+            <strong style="font-size:15px">New exam</strong>
+            <span style="font-size:13px;color:#767d89">Practice Test 5 &#183; 12th A, B, C</span>
+          </div>
+          <div class="st-tpl">
+            <span class="lb2">Your templates</span>
+            <span class="pb-pill on">Monthly full paper</span>
+            <span class="pb-pill">Weekly chapter test</span>
+            <span class="pb-pill">Saturday revision</span>
+            <span class="pb-pill">Half-syllabus test</span>
+            <span class="pb-pill st-new">+ New template</span>
+          </div>
+          <div class="st-body">
+            <div class="st-left">
+              <dl class="st-meta">
+                <dt>Pattern</dt><dd>MHT-CET PCM &#183; 150 questions &#183; 180 minutes</dd>
+                <dt>Marks</dt><dd>200 &#183; no negative marking</dd>
+                <dt>Students</dt><dd>284 across 3 batches</dd>
+              </dl>
+              <div class="pb-sub" style="margin-top:0">Shifts</div>
+              <div class="shift">
+                <span><span class="sh1">Shift 1</span><br><span class="sh2">28 Oct &#183; 10:00 &#183; 60 seats &#183; Mrs. Kulkarni</span></span>
+                <span><div class="code-lb">Code</div><span class="code"><i>4</i><i>7</i><i>2</i><i>9</i></span></span>
+              </div>
+              <div class="shift">
+                <span><span class="sh1">Shift 2</span><br><span class="sh2">28 Oct &#183; 14:00 &#183; 60 seats &#183; Mr. Pawar</span></span>
+                <span><div class="code-lb">Code</div><span class="code"><i>8</i><i>1</i><i>5</i><i>3</i></span></span>
+              </div>
+              <div style="font-size:11.5px;color:#767d89;margin-top:7px">&hellip;and 3 more. Students are split automatically; move anyone by hand.</div>
+            </div>
+            <div class="st-right">
+              <div class="pb-sub" style="margin-top:0">During the exam</div>
+              <div class="tog"><span class="sw2 on"></span><span>Question order shuffled</span><span class="val2">per student</span></div>
+              <div class="tog"><span class="sw2 on"></span><span>Full screen locked, copy blocked</span></div>
+              <div class="tog"><span class="sw2 on"></span><span>Tab switching flagged</span><span class="val2">after 3</span></div>
+              <div class="tog"><span class="sw2"></span><span>Results shown to students</span><span class="val2">held</span></div>
+
+              <div class="login-box">
+                <div class="h5">How students sign in</div>
+                <div class="lf"><label>Roll number</label><div class="box2">R-1042</div></div>
+                <div class="lf"><label>PIN</label><div class="box2">&#8226;&#8226;&#8226;&#8226; <em>set once, teacher can reset</em></div></div>
+                <div class="lf" style="margin-bottom:0"><label>Shift code</label><div class="box2">4 7 2 9 <em>written on the board</em></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-cap">
+        <b>Every student gets the questions in a different order</b>, and the shift code is given out only when that shift starts.
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- ==================== 8 · MONITOR ==================== -->
 <section class="slide pad-tight" id="s8">
   <div class="inner">
@@ -683,7 +1745,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
       <p>A teacher walking the lab can see who is in trouble without asking, and can act without
         interrupting anyone else.</p>
     </div>
-    <div>
+    <div class="demo">
       <div class="demo-bar">
         <div class="tl"><i></i><i></i><i></i></div>
         <div class="u">MHT-CET Practice Test &#183; Shift 1 &#183; live</div>
@@ -694,9 +1756,9 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
             <strong>Shift 1</strong>
             <span style="font-size:13px;color:#767d89">started 10:00 &#183; 1h 12m left</span>
             <div class="mon-stats">
-              <span><b style="color:var(--st-answered)">26</b> writing</span>
-              <span><b style="color:var(--btn-mark)">3</b> slow</span>
-              <span><b style="color:var(--st-notanswered)">4</b> disconnected</span>
+              <span><b style="color:var(--c-good)">26</b> writing</span>
+              <span><b style="color:var(--c-mid)">3</b> slow</span>
+              <span><b style="color:var(--c-low)">4</b> disconnected</span>
               <span><b style="color:#949cab">1</b> not started</span>
             </div>
           </div>
@@ -783,11 +1845,10 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
   <div class="inner">
     <div class="head">
       <span class="label">After the exam</span>
-      <h2>Marks the same day, and something to teach from</h2>
-      <p>Papers are marked automatically the moment a shift closes, using the exam&rsquo;s own marking
-        scheme.</p>
+      <h2>Marks the same day</h2>
+      <p>Marked automatically the moment a shift closes, using the exam&rsquo;s own marking scheme.</p>
     </div>
-    <div>
+    <div class="demo">
       <div class="demo-bar">
         <div class="tl"><i></i><i></i><i></i></div>
         <div class="u">Result &#183; Sanika Deshmukh &#183; MHT-CET Practice Test</div>
@@ -806,21 +1867,20 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
                 <div class="tile"><div class="k">Attempted</div><div class="v">142<small> / 150</small></div></div>
               </div>
               <p class="rs-h">Accuracy by chapter</p>
-              <div class="bar-row"><span>Circle</span><span class="bar"><i style="width:92%;background:var(--st-answered)"></i></span><span class="pct">92%</span></div>
-              <div class="bar-row"><span>Trigonometry</span><span class="bar"><i style="width:81%;background:var(--st-answered)"></i></span><span class="pct">81%</span></div>
-              <div class="bar-row"><span>Vectors &amp; 3D</span><span class="bar"><i style="width:64%;background:var(--btn-mark)"></i></span><span class="pct">64%</span></div>
-              <div class="bar-row"><span>Probability</span><span class="bar"><i style="width:58%;background:var(--btn-mark)"></i></span><span class="pct">58%</span></div>
-              <div class="bar-row"><span>Differential Eq.</span><span class="bar"><i style="width:36%;background:var(--st-notanswered)"></i></span><span class="pct">36%</span></div>
-              <div class="bar-row"><span>Matrices</span><span class="bar"><i style="width:29%;background:var(--st-notanswered)"></i></span><span class="pct">29%</span></div>
+              <div class="bar-row"><span>Circle</span><span class="bar"><i style="width:92%;background:var(--c-good)"></i></span><span class="pct">92%</span></div>
+              <div class="bar-row"><span>Trigonometry</span><span class="bar"><i style="width:81%;background:var(--c-good)"></i></span><span class="pct">81%</span></div>
+              <div class="bar-row"><span>Vectors &amp; 3D</span><span class="bar"><i style="width:64%;background:var(--c-mid)"></i></span><span class="pct">64%</span></div>
+              <div class="bar-row"><span>Probability</span><span class="bar"><i style="width:58%;background:var(--c-mid)"></i></span><span class="pct">58%</span></div>
+              <div class="bar-row"><span>Differential Eq.</span><span class="bar"><i style="width:36%;background:var(--c-low)"></i></span><span class="pct">36%</span></div>
             </div>
             <div class="rs-right">
               <p class="rs-h">Where the marks went</p>
               <div class="insight">
-                <div class="t"><span class="sw" style="background:var(--btn-mark)"></span>Right, but slow</div>
+                <div class="t"><span class="sw" style="background:var(--c-mid)"></span>Right, but slow</div>
                 <div class="d">9 questions took over 3 minutes each &mdash; nearly 30 minutes for 9 marks.</div>
               </div>
               <div class="insight">
-                <div class="t"><span class="sw" style="background:var(--st-notanswered)"></span>Fast and wrong</div>
+                <div class="t"><span class="sw" style="background:var(--c-low)"></span>Fast and wrong</div>
                 <div class="d">6 questions answered in under 20 seconds, all incorrect. Likely guesses.</div>
               </div>
               <div class="insight">
@@ -828,7 +1888,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
                 <div class="d">8 questions left unopened, 6 of them in the last 15 minutes.</div>
               </div>
               <div class="insight">
-                <div class="t"><span class="sw" style="background:var(--st-answered)"></span>Compared with the batch</div>
+                <div class="t"><span class="sw" style="background:var(--c-good)"></span>Compared with the batch</div>
                 <div class="d">Above the batch average in 4 of 6 chapters. Matrices is the weakest.</div>
               </div>
             </div>
@@ -839,6 +1899,263 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
         <b>For the teacher, the same information for the whole batch</b> &mdash; which questions most
         students got wrong, and which chapter to go over tomorrow.
       </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 11 · TEACHER VIEW ==================== -->
+<section class="slide pad-tight" id="s11">
+  <div class="inner">
+    <div class="head">
+      <span class="label">For the teacher</span>
+      <h2>What to go over tomorrow</h2>
+      <p>The same exam, seen across the whole batch &mdash; which questions most students got wrong,
+        and which chapters need another lesson.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="tl"><i></i><i></i><i></i></div>
+        <div class="u">Batch report &#183; 12th A &#183; MHT-CET Practice Test 4</div>
+      </div>
+      <div class="demo-body">
+        <div class="tb">
+          <div class="tb-top">
+            <strong style="font-size:15px">12th A &#183; Mathematics</strong>
+            <span style="font-size:13px;color:#767d89">112 students &#183; all shifts complete</span>
+            <span style="margin-left:auto;font-size:13px;color:#767d89">Average <b style="font-family:'Roboto Mono',monospace;color:var(--navy)">121</b> / 200</span>
+          </div>
+          <div class="tb-body">
+            <div class="tb-left">
+              <p class="rs-h">Questions the batch found hardest</p>
+              <div class="qrow"><span class="qid">Q 137<br><span class="qch">Matrices</span></span><span class="qbar"><i style="width:88%"></i></span><span class="qpct">12% correct</span></div>
+              <div class="qrow"><span class="qid">Q 142<br><span class="qch">Diff. Eq.</span></span><span class="qbar"><i style="width:81%"></i></span><span class="qpct">19% correct</span></div>
+              <div class="qrow"><span class="qid">Q 129<br><span class="qch">Matrices</span></span><span class="qbar"><i style="width:77%"></i></span><span class="qpct">23% correct</span></div>
+              <div class="qrow"><span class="qid">Q 148<br><span class="qch">Probability</span></span><span class="qbar"><i style="width:69%;background:var(--c-mid)"></i></span><span class="qpct">31% correct</span></div>
+              <div class="qrow"><span class="qid">Q 133<br><span class="qch">Vectors 3D</span></span><span class="qbar"><i style="width:62%;background:var(--c-mid)"></i></span><span class="qpct">38% correct</span></div>
+              <p class="rs-h" style="margin-top:20px">Marks across the batch</p>
+              <div class="heat">
+                <i style="background:#edeff0"></i><i style="background:#dde6dc"></i><i style="background:#c6d8c5"></i>
+                <i style="background:#a8c4a8"></i><i style="background:#8cb08d"></i><i style="background:#78a17d"></i>
+              </div>
+              <div class="heat-key">
+                <span>0&ndash;40</span>
+                <span class="g"><i style="background:#edeff0"></i><i style="background:#dde6dc"></i><i style="background:#c6d8c5"></i><i style="background:#a8c4a8"></i><i style="background:#8cb08d"></i><i style="background:#78a17d"></i></span>
+                <span>160&ndash;200</span>
+                <span style="margin-left:auto">most students between 100 and 140</span>
+              </div>
+            </div>
+            <div class="tb-right">
+              <p class="rs-h">Chapter accuracy, whole batch</p>
+              <div class="bar-row" style="grid-template-columns:118px 1fr 38px"><span>Trigonometry</span><span class="bar"><i style="width:78%;background:var(--c-good)"></i></span><span class="pct">78%</span></div>
+              <div class="bar-row" style="grid-template-columns:118px 1fr 38px"><span>Circle</span><span class="bar"><i style="width:71%;background:var(--c-good)"></i></span><span class="pct">71%</span></div>
+              <div class="bar-row" style="grid-template-columns:118px 1fr 38px"><span>Vectors &amp; 3D</span><span class="bar"><i style="width:57%;background:var(--c-mid)"></i></span><span class="pct">57%</span></div>
+              <div class="bar-row" style="grid-template-columns:118px 1fr 38px"><span>Probability</span><span class="bar"><i style="width:49%;background:var(--c-mid)"></i></span><span class="pct">49%</span></div>
+              <div class="bar-row" style="grid-template-columns:118px 1fr 38px"><span>Differential Eq.</span><span class="bar"><i style="width:34%;background:var(--c-low)"></i></span><span class="pct">34%</span></div>
+              <div class="bar-row" style="grid-template-columns:118px 1fr 38px"><span>Matrices</span><span class="bar"><i style="width:26%;background:var(--c-low)"></i></span><span class="pct">26%</span></div>
+              <div class="insight" style="margin-top:16px">
+                <div class="t"><span class="sw" style="background:var(--c-low)"></span>Worth a lesson</div>
+                <div class="d">Matrices and Differential Equations are below 35% across the whole
+                  batch &mdash; not a few students struggling, the class.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-cap">
+        <b>Every student&rsquo;s paper is also there in full</b> &mdash; their answer, the correct
+        answer, and the time they spent on each question.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MERIT LIST ==================== -->
+<section class="slide pad-tight" id="sMerit">
+  <div class="inner">
+    <div class="head">
+      <span class="label">Ranking</span>
+      <h2>Merit list, overall and subject-wise</h2>
+      <p>Ready the moment the last shift closes &mdash; for the noticeboard, for the staff room, and for
+        parents.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="tl"><i></i><i></i><i></i></div>
+        <div class="u">Merit list &#183; MHT-CET Practice Test 4</div>
+      </div>
+      <div class="demo-body">
+        <div class="ml">
+          <div class="ml-top">
+            <strong style="font-size:15px">Merit list</strong>
+            <span style="font-size:13px;color:#767d89">MHT-CET Practice Test 4 &#183; 284 students &#183; all shifts</span>
+            <span class="ml-act">
+              <button class="ml-btn">Print</button>
+              <button class="ml-btn">Export</button>
+              <button class="ml-btn">Share</button>
+            </span>
+          </div>
+          <div class="ml-tabs">
+            <div class="ml-tab on">Overall</div>
+            <div class="ml-tab">Physics</div>
+            <div class="ml-tab">Chemistry</div>
+            <div class="ml-tab">Mathematics</div>
+            <div class="ml-tab">By batch</div>
+          </div>
+          <div class="ml-body">
+            <div class="ml-left">
+              <div class="ml-hd"><span>Rank</span><span>Student</span><span style="text-align:right">Marks</span><span style="text-align:right">Percentile</span><span style="text-align:right">Batch</span></div>
+              <div class="ml-r top"><span class="rk">1</span><span>Aditi Kulkarni<br><span class="roll">R-1007</span></span><span class="mk">186</span><span class="pc2">99.6</span><span class="pc2">12th A</span></div>
+              <div class="ml-r top"><span class="rk">2</span><span>Rohit Pawar<br><span class="roll">R-1131</span></span><span class="mk">181</span><span class="pc2">99.3</span><span class="pc2">12th B</span></div>
+              <div class="ml-r top"><span class="rk">3</span><span>Neha Patil<br><span class="roll">R-1054</span></span><span class="mk">178</span><span class="pc2">98.9</span><span class="pc2">12th A</span></div>
+              <div class="ml-r"><span class="rk">4</span><span>Yash Chavan<br><span class="roll">R-1088</span></span><span class="mk">174</span><span class="pc2">98.6</span><span class="pc2">12th C</span></div>
+              <div class="ml-r"><span class="rk">5</span><span>Pranav Shinde<br><span class="roll">R-1019</span></span><span class="mk">171</span><span class="pc2">98.2</span><span class="pc2">12th A</span></div>
+              <div class="ml-r"><span class="rk">7</span><span>Sanika Deshmukh<br><span class="roll">R-1042</span></span><span class="mk">148</span><span class="pc2">93.7</span><span class="pc2">12th A</span></div>
+            </div>
+            <div class="ml-right">
+              <div class="pb-sub" style="margin-top:0">Subject toppers</div>
+              <div class="topper"><div><div class="sub">Physics</div><div class="nm2">Rohit Pawar</div></div><span class="sc">48<span style="font-size:11px;color:#949cab">/50</span></span></div>
+              <div class="topper"><div><div class="sub">Chemistry</div><div class="nm2">Aditi Kulkarni</div></div><span class="sc">47<span style="font-size:11px;color:#949cab">/50</span></span></div>
+              <div class="topper"><div><div class="sub">Mathematics</div><div class="nm2">Aditi Kulkarni</div></div><span class="sc">94<span style="font-size:11px;color:#949cab">/100</span></span></div>
+              <div class="insight" style="margin-top:14px">
+                <div class="t"><span class="sw" style="background:var(--navy)"></span>Percentile across shifts</div>
+                <div class="d">Students sat across five shifts. Percentile is worked out the way the
+                  real exam does it, so ranks stay fair between them.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-cap">
+        <b>Subject-wise lists, batch-wise lists, and a printable sheet</b> &mdash; the same result seen
+        the way each person needs it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROGRESS ==================== -->
+<section class="slide pad-tight" id="sProg">
+  <div class="inner">
+    <div class="head">
+      <span class="label">Across the year</span>
+      <h2>Is this student actually improving?</h2>
+      <p>With two tests a month, the useful question is not one score &mdash; it is the direction. Every
+        test a student sits builds the same picture.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="tl"><i></i><i></i><i></i></div>
+        <div class="u">Progress &#183; Sanika Deshmukh &#183; 12th A</div>
+      </div>
+      <div class="demo-body">
+        <div class="pg">
+          <div class="pg-top">
+            <strong style="font-size:15px">Sanika Deshmukh</strong>
+            <span style="font-size:13px;color:#767d89">12th A &#183; 6 tests since June</span>
+            <span style="margin-left:auto;font-size:13px;color:#767d89">Best <b style="font-family:'Roboto Mono',monospace;color:var(--navy)">148</b> &#183; Average <b style="font-family:'Roboto Mono',monospace;color:var(--navy)">131</b></span>
+          </div>
+          <div class="pg-body">
+            <div class="pg-left">
+              <svg viewBox="0 0 560 232" width="100%" role="img" aria-label="Marks rising across six tests, with subject lines">
+                <g stroke="#eef0f3" stroke-width="1">
+                  <line x1="42" y1="20" x2="548" y2="20"/><line x1="42" y1="62" x2="548" y2="62"/>
+                  <line x1="42" y1="104" x2="548" y2="104"/><line x1="42" y1="146" x2="548" y2="146"/>
+                  <line x1="42" y1="188" x2="548" y2="188"/>
+                </g>
+                <g font-family="Roboto Mono, monospace" font-size="9" fill="#a4abb6">
+                  <text x="34" y="23" text-anchor="end">200</text><text x="34" y="65" text-anchor="end">160</text>
+                  <text x="34" y="107" text-anchor="end">120</text><text x="34" y="149" text-anchor="end">80</text>
+                  <text x="34" y="191" text-anchor="end">40</text>
+                </g>
+                <polyline points="80,152 174,138 268,128 362,120 456,110 540,82" fill="none" stroke="var(--navy)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="80,168 174,160 268,166 362,150 456,144 540,120" fill="none" stroke="#8cb08d" stroke-width="1.6" stroke-dasharray="4 3"/>
+                <polyline points="80,178 174,182 268,176 362,180 456,174 540,172" fill="none" stroke="#c2a468" stroke-width="1.6" stroke-dasharray="4 3"/>
+                <g fill="var(--navy)">
+                  <circle cx="80" cy="152" r="3.6"/><circle cx="174" cy="138" r="3.6"/><circle cx="268" cy="128" r="3.6"/>
+                  <circle cx="362" cy="120" r="3.6"/><circle cx="456" cy="110" r="3.6"/><circle cx="540" cy="82" r="4.6"/>
+                </g>
+                <text x="540" y="72" text-anchor="end" font-family="Roboto Mono, monospace" font-size="11" font-weight="600" fill="var(--navy)">148</text>
+                <g font-family="Public Sans, sans-serif" font-size="10" fill="#949cab" text-anchor="middle">
+                  <text x="80" y="212">Test 1</text><text x="174" y="212">Test 2</text><text x="268" y="212">Test 3</text>
+                  <text x="362" y="212">Test 4</text><text x="456" y="212">Test 5</text><text x="540" y="212">Test 6</text>
+                </g>
+                <g font-family="Public Sans, sans-serif" font-size="10" fill="#767d89">
+                  <rect x="42" y="222" width="14" height="2.6" fill="#1b3a63"/><text x="62" y="227">Total</text>
+                  <rect x="106" y="222" width="14" height="2.6" fill="#8cb08d"/><text x="126" y="227">Chemistry</text>
+                  <rect x="190" y="222" width="14" height="2.6" fill="#c2a468"/><text x="210" y="227">Mathematics</text>
+                </g>
+              </svg>
+            </div>
+            <div class="pg-right">
+              <div class="pb-sub" style="margin-top:0">Since June</div>
+              <div class="trend"><span class="ar" style="color:var(--c-good)">&#8599;</span><span class="lb">Overall</span><span class="dt">+31</span></div>
+              <div class="trend"><span class="ar" style="color:var(--c-good)">&#8599;</span><span class="lb">Chemistry</span><span class="dt">+18</span></div>
+              <div class="trend"><span class="ar" style="color:var(--c-good)">&#8599;</span><span class="lb">Physics</span><span class="dt">+11</span></div>
+              <div class="trend"><span class="ar" style="color:var(--c-mid)">&#8594;</span><span class="lb">Mathematics</span><span class="dt">+2</span></div>
+              <div class="insight" style="margin-top:14px">
+                <div class="t"><span class="sw" style="background:var(--c-mid)"></span>Where to push</div>
+                <div class="d">Chemistry has moved steadily. Mathematics has been flat for four tests
+                  &mdash; Matrices and Differential Equations each time.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-cap">
+        <b>The same view for a whole batch or class</b> &mdash; useful at a parents&rsquo; meeting, and
+        useful when deciding what to revise before the real exam.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SHARING ==================== -->
+<section class="slide" id="sShare">
+  <div class="inner">
+    <div class="head">
+      <span class="label">Telling parents</span>
+      <h2>A result a parent can actually read</h2>
+      <p>One tap sends each student&rsquo;s result as a single card &mdash; readable on any phone, with
+        your college name on it.</p>
+    </div>
+    <div class="share-split">
+      <div class="phone">
+        <div class="phone-in">
+          <span class="wa-day">Today</span>
+          <div class="wa-msg">
+            <div class="rescard">
+              <div class="sch">Dr. C. S. Jr. College &#183; Result</div>
+              <div class="nm3">Sanika Deshmukh</div>
+              <div class="ex2">MHT-CET Practice Test 4 &#183; 12th A</div>
+              <div class="big"><b>148</b><span>out of 200</span></div>
+              <div class="rk2">Rank <b>7</b> of 284 &#183; 93.7 percentile</div>
+              <div class="sline"><span>Physics</span><span class="sb"><i style="width:78%;background:var(--c-good)"></i></span><span class="sv">39</span></div>
+              <div class="sline"><span>Chemistry</span><span class="sb"><i style="width:72%;background:var(--c-good)"></i></span><span class="sv">36</span></div>
+              <div class="sline"><span>Mathematics</span><span class="sb"><i style="width:73%;background:var(--c-mid)"></i></span><span class="sv">73</span></div>
+              <div style="margin-top:11px;padding-top:9px;border-top:1px solid #eef0f3;font-size:11px;color:#767d89">
+                Improved by 12 marks since the last test.
+              </div>
+            </div>
+            <div class="wa-time">11:04 &#10003;&#10003;</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <h3>Sent to the whole batch at once</h3>
+          <p>Each parent gets only their own child&rsquo;s card. No list of other students, no marks
+            anyone else can see.</p>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <h3>Your college name, not ours</h3>
+          <p>The card carries your name and logo. It is your result going out, in your name.</p>
+        </div>
+        <div class="card">
+          <h3>Or print it</h3>
+          <p>The same result prints as a report sheet for students who would rather have it on paper,
+            and the merit list prints for the noticeboard.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -867,6 +2184,7 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
 <nav class="nav" aria-label="Slide navigation">
   <span class="brandmark">Flyer</span>
   <div class="dots" id="dots" role="tablist"></div>
+  <div class="track" aria-hidden="true"><i id="trackfill"></i></div>
   <div class="nav-right">
     <span class="count" id="count">1 / 11</span>
     <button class="arrow" id="prev" aria-label="Previous slide">&#8592;</button>
@@ -881,46 +2199,9 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
   var count  = document.getElementById('count');
   var prev   = document.getElementById('prev');
   var next   = document.getElementById('next');
+  var topfill   = document.getElementById('topfill');
+  var trackfill = document.getElementById('trackfill');
   var i = 0;
-
-  // Shrink a slide's content to the available height instead of letting it scroll.
-  // A plain transform:scale() on an in-flow box doesn't work here — the browser still
-  // reserves the box's pre-transform height for scrolling purposes. So the scaled
-  // content is taken out of flow, and its holder is resized to the scaled-down height.
-  function fitSlide(slide){
-    var inner = slide.querySelector('.inner');
-    if (!inner) return;
-    var content = inner.querySelector(':scope > .fit-content');
-    if (!content){
-      content = document.createElement('div');
-      content.className = 'fit-content';
-      while (inner.firstChild) content.appendChild(inner.firstChild);
-      inner.appendChild(content);
-    }
-    content.style.position = 'static';
-    content.style.transform = 'none';
-    inner.style.height = '';
-
-    var cs = getComputedStyle(slide);
-    var availH = slide.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    var neededH = content.scrollHeight;
-    var scale = Math.min(1, Math.max(0.32, (availH / neededH) * 0.985));
-
-    if (scale < 1){
-      inner.style.height = Math.floor(neededH * scale) + 'px';
-      content.style.position = 'absolute';
-      content.style.top = '0';
-      content.style.left = '0';
-      content.style.transformOrigin = 'top center';
-      content.style.transform = 'scale(' + scale.toFixed(3) + ')';
-    } else {
-      content.style.position = 'static';
-    }
-  }
-
-  function fitAll(){
-    slides.forEach(fitSlide);
-  }
 
   slides.forEach(function(s, n){
     var b = document.createElement('button');
@@ -942,6 +2223,9 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
     count.textContent = (i+1) + ' / ' + slides.length;
     prev.disabled = (i === 0);
     next.disabled = (i === slides.length - 1);
+    var pct = ((i+1) / slides.length * 100) + '%';
+    if (topfill)   topfill.style.width = pct;
+    if (trackfill) trackfill.style.width = pct;
     if (history.replaceState) history.replaceState(null, '', '#' + (i+1));
   }
 
@@ -955,54 +2239,75 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
     else if (e.key === 'End')  { go(slides.length-1); }
   });
 
-  // swipe — a touch that starts on a horizontally-scrollable mockup (the demo
-  // screenshots, the import thumbnail strip) scrolls that instead of changing slides,
-  // so dragging to see the hidden edge of an image doesn't also flip the deck.
-  var x0 = null;
-  var swipeBlocked = false;
-  document.addEventListener('touchstart', function(e){
-    x0 = e.changedTouches[0].clientX;
-    swipeBlocked = !!e.target.closest('.demo-body, .im-thumbs');
-  }, {passive:true});
-  document.addEventListener('touchend', function(e){
-    if (x0 === null) return;
-    if (!swipeBlocked){
-      var dx = e.changedTouches[0].clientX - x0;
-      if (Math.abs(dx) > 60) go(dx < 0 ? i+1 : i-1);
+  /* ---- swipe ----
+     A horizontal drag only changes slide when it is clearly horizontal and
+     did not start inside something that scrolls sideways itself (the section
+     tab strips, the page thumbnails, a specimen still in a scroll pane).   */
+  function inSideScroller(el, dx){
+    while (el && el !== document.body){
+      if (el.scrollWidth - el.clientWidth > 4){
+        var atStart = el.scrollLeft <= 0;
+        var atEnd   = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+        if (!(dx < 0 ? atEnd : atStart)) return true;
+      }
+      el = el.parentElement;
     }
-    x0 = null;
+    return false;
+  }
+
+  var x0 = null, y0 = null, t0 = 0, target = null;
+  document.addEventListener('touchstart', function(e){
+    if (e.touches.length > 1) { x0 = null; return; }
+    x0 = e.changedTouches[0].clientX;
+    y0 = e.changedTouches[0].clientY;
+    t0 = e.timeStamp;
+    target = e.target;
   }, {passive:true});
 
-  // Scroll cue for the horizontally-scrollable mockups: shows while there's more
-  // to see off the right edge, fades once scrolled to the end.
-  function initScrollHints(){
-    Array.prototype.forEach.call(document.querySelectorAll('.demo-body'), function(db){
-      if (!db.querySelector('.demo-scroll-hint')){
-        var hint = document.createElement('span');
-        hint.className = 'demo-scroll-hint';
-        hint.innerHTML = 'Swipe<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-        db.appendChild(hint);
-        db.addEventListener('scroll', function(){ updateScrollHint(db); }, {passive:true});
-      }
-      updateScrollHint(db);
+  document.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    var dt = e.timeStamp - t0;
+    x0 = null;
+    if (Math.abs(dx) < 55) return;              // too small
+    if (Math.abs(dx) < Math.abs(dy) * 1.6) return;  // that was a scroll
+    if (dt > 900) return;                       // that was a drag, not a flick
+    if (inSideScroller(target, dx)) return;     // the pane under the finger owns it
+    go(dx < 0 ? i+1 : i-1);
+  }, {passive:true});
+
+  /* mark the strips that actually overflow, so only those get the fade */
+  var panners = document.querySelectorAll('.fig-wide,.ex-sections,.ml-tabs,.im-thumbs');
+  function markPanners(){
+    Array.prototype.forEach.call(panners, function(el){
+      el.classList.toggle('can-pan', el.scrollWidth - el.clientWidth > 4);
     });
   }
-  function updateScrollHint(db){
-    db.classList.toggle('is-scrollable', db.scrollWidth > db.clientWidth + 2);
-    db.classList.toggle('at-end', db.scrollLeft + db.clientWidth >= db.scrollWidth - 2);
+  markPanners();
+  window.addEventListener('resize', markPanners);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(markPanners);
+
+  /* a section tab strip that scrolls should not open with the live tab half off
+     the edge — bring its right edge in, keeping the earlier tabs in view */
+  function revealActiveTabs(){
+    document.querySelectorAll('.ex-sections .on, .ml-tabs .on').forEach(function(el){
+      var p = el.parentElement;
+      if (p.scrollWidth - p.clientWidth < 4) { p.scrollLeft = 0; return; }
+      p.scrollLeft = Math.max(0, el.offsetLeft + el.offsetWidth - p.clientWidth + 14);
+    });
   }
+  revealActiveTabs();
+  window.addEventListener('resize', revealActiveTabs);
+
+  /* keep 100vh honest on mobile browsers with a collapsing address bar */
+  function vh(){ document.documentElement.style.setProperty('--vh', window.innerHeight + 'px'); }
+  vh();
+  window.addEventListener('resize', vh);
+  window.addEventListener('orientationchange', vh);
 
   var start = parseInt((location.hash || '').replace('#',''), 10);
   go(!isNaN(start) && start >= 1 && start <= slides.length ? start - 1 : 0);
-
-  fitAll();
-  initScrollHints();
-  var resizeTimer;
-  window.addEventListener('resize', function(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function(){ fitAll(); initScrollHints(); }, 120);
-  });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitAll(); initScrollHints(); });
 })();
 </script>
 </body>
