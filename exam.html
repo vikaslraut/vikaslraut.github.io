@@ -132,7 +132,25 @@ p{margin:0 0 16px}
   font-family:"Roboto Mono",monospace;font-size:11px;color:#8d96a4;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .demo-body{background:#fff;border:1px solid var(--rule);border-top:none;
-           border-radius:0 0 6px 6px;overflow-x:auto}
+           border-radius:0 0 6px 6px;overflow-x:auto;position:relative}
+.demo-body::after{
+  content:"";position:absolute;top:0;right:0;bottom:0;width:40px;
+  background:linear-gradient(to right,transparent,rgba(255,255,255,.92) 70%);
+  pointer-events:none;opacity:0;transition:opacity .25s ease;border-radius:0 0 6px 0;
+}
+.demo-body.is-scrollable::after{opacity:1}
+.demo-body.at-end::after{opacity:0}
+.demo-scroll-hint{
+  position:absolute;right:10px;bottom:10px;z-index:2;display:flex;align-items:center;gap:4px;
+  background:rgba(20,23,28,.82);color:#fff;font-family:"Roboto Mono",monospace;
+  font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px 5px 10px;
+  border-radius:99px;pointer-events:none;opacity:0;transition:opacity .25s ease;white-space:nowrap;
+}
+.demo-scroll-hint svg{width:11px;height:11px;flex:none;animation:hint-nudge 1.4s ease-in-out infinite}
+.demo-body.is-scrollable .demo-scroll-hint{opacity:1}
+.demo-body.at-end .demo-scroll-hint{opacity:0}
+@keyframes hint-nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){.demo-scroll-hint svg{animation:none}}
 .demo-cap{margin-top:13px;font-size:15px;color:var(--muted);max-width:78ch}
 .demo-cap b{color:var(--ink);font-weight:600}
 
@@ -937,26 +955,54 @@ kbd{font-family:"Roboto Mono",monospace;font-size:10.5px;background:#eef0f3;bord
     else if (e.key === 'End')  { go(slides.length-1); }
   });
 
-  // swipe
+  // swipe — a touch that starts on a horizontally-scrollable mockup (the demo
+  // screenshots, the import thumbnail strip) scrolls that instead of changing slides,
+  // so dragging to see the hidden edge of an image doesn't also flip the deck.
   var x0 = null;
-  document.addEventListener('touchstart', function(e){ x0 = e.changedTouches[0].clientX; }, {passive:true});
+  var swipeBlocked = false;
+  document.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX;
+    swipeBlocked = !!e.target.closest('.demo-body, .im-thumbs');
+  }, {passive:true});
   document.addEventListener('touchend', function(e){
     if (x0 === null) return;
-    var dx = e.changedTouches[0].clientX - x0;
-    if (Math.abs(dx) > 60) go(dx < 0 ? i+1 : i-1);
+    if (!swipeBlocked){
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 60) go(dx < 0 ? i+1 : i-1);
+    }
     x0 = null;
   }, {passive:true});
+
+  // Scroll cue for the horizontally-scrollable mockups: shows while there's more
+  // to see off the right edge, fades once scrolled to the end.
+  function initScrollHints(){
+    Array.prototype.forEach.call(document.querySelectorAll('.demo-body'), function(db){
+      if (!db.querySelector('.demo-scroll-hint')){
+        var hint = document.createElement('span');
+        hint.className = 'demo-scroll-hint';
+        hint.innerHTML = 'Swipe<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+        db.appendChild(hint);
+        db.addEventListener('scroll', function(){ updateScrollHint(db); }, {passive:true});
+      }
+      updateScrollHint(db);
+    });
+  }
+  function updateScrollHint(db){
+    db.classList.toggle('is-scrollable', db.scrollWidth > db.clientWidth + 2);
+    db.classList.toggle('at-end', db.scrollLeft + db.clientWidth >= db.scrollWidth - 2);
+  }
 
   var start = parseInt((location.hash || '').replace('#',''), 10);
   go(!isNaN(start) && start >= 1 && start <= slides.length ? start - 1 : 0);
 
   fitAll();
+  initScrollHints();
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitAll, 120);
+    resizeTimer = setTimeout(function(){ fitAll(); initScrollHints(); }, 120);
   });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitAll(); initScrollHints(); });
 })();
 </script>
 </body>
